@@ -1,16 +1,16 @@
 .head {
+    transform: translate(25%, 0%);
     width:222px;
     height: 160px;
     background-color:gray;
     border-radius: 63px; 
-    margin-left: 50px;
-    margin-top: 30px;
+    border: 2px solid black;
+    
 }   
 
 .ears{
     display: inline-flex;
-    margin-block-start: -4px;
-    margin-inline-start: 7px;
+    transform: translate(3%, 0%);
 }
 .rightear{
     width: 0;
@@ -20,6 +20,7 @@
     margin-right: 50px;
     transform: rotate(12deg);
     
+    
 }
 .leftear{
     width: 0;
@@ -28,6 +29,15 @@
     border-left: 55px solid transparent;
     margin-left: 50px; 
     transform: rotate(-8deg);
+}
+
+.front {
+    position: absolute;
+    transform: translate(90%, 0%);
+    height: 50px;
+    width: 80px;
+    border-radius: 0 0 18px 46px;
+    background-color: black;
 }
 .innerear{
     width: 0;
@@ -48,66 +58,89 @@
     margin-block-start: -50px;
     margin-inline-start: -32px;  
 }
+.nouse{
+    position: absolute;
+    width: 31px;
+    height: 20px;
+    background: black;
+    border-radius: 50%;
+    transform: translate(262%, 84%);
+}
 .eyes{
-    width: 128px;
-    height: 50px;
+    width: 150px;
+    height: 55px;
     display: inline-flex;
-    
+    position: absolute;
+    transform: translate(-115%, 16%);
 }
 .eye{
     background-color: white;
-    width: 44px;
-    height: 44px;
-    border-radius: 100px; 
-    margin:33px;  
-    margin-block-start: 10px;
-     
+    width: 60px;
+    height: 60px;
+    border-radius: 100px;
+    border: 1px solid black;
 }
 
 .pupil{
-    background-color: black;
+    background-color:black;
     width: 30px;
     height: 30px;
     border-radius: 100px;   
-    margin-block-start: 10px;
-    margin-inline-start: 10px; 
+    transform: translate(29%, 78%);
+    border: 3px solid blue;
 }
 .mouth{
+    position: absolute;
     background-color: black;
     width: 55px;
     height: 16px;
-    margin: auto;
+    transform: translate(131%,261%);
     border-radius: 20px;
 }
+
+.tongue{
+    margin-left: 25px;
+    margin-block: -5px;
+    display: -webkit-inline-box;
+    transform: translate(-50%, -50%);
+    height: 12px;
+    width: 26px;
+    border-radius: 150px 150px 0 0;
+    background-color: lightpink;
+}
 .whisker{
+    position: absolute;
     width: 70px;
     height: 2px;
     background-color: black;
-    margin-block-start: 3px;
+    margin-block-start: 34px;
     transform: rotate(-8deg);
 }
 .whisker2{
+    position: absolute;
     width: 70px;
     height: 2px;
     background-color: black;
-    margin-block-start: -9px;
+    margin-block-start: 28px;
     transform: rotateX(-8deg);
 }
 
 .whisker3 {
+    position: absolute;
     width: 70px;
     height: 2px;
     background-color: black;
-    margin-block-start: 3px;
-    margin-left: 152px;
+    margin-block-start: 33px;
+    margin-left: 125px;
     transform: rotate(8deg);
 }
 .whisker4{
+    position: absolute;
     width: 70px;
     height: 2px;
     background-color: black;
-    margin-block-start: -9px;
-    margin-left: 151px;
+    margin-block-start: 27px;
+    margin-left: 125px;
     transform: rotateX(-8deg);
 }
 .body {
@@ -118,7 +151,7 @@
     border-top-right-radius: 65px; 
     border-bottom-right-radius: 10px;   
     border-top-left-radius: 45px;
-    
+    border: 2px solid black;
 }  
 .neck {
     width: 110px;
@@ -126,37 +159,40 @@
     border-radius: 8px 8px 46px 46px;
     background-color: black;
     margin-left: 30px;
+    
+}
+.tail {
+    position: absolute;
+    transform: translate(140%, 63%);
+    height: 73px;
+    width: 139px;
+    border-radius: 272px 3px 306px 1px;
+    background-color: gray;
+    border: 2px solid black;
+  
 }
 .legs{
     width: 100px;
     height: 50px;
     display: inline-flex;
-    margin-top: -12px;
-  
+    margin-top: -26px;
 }
 .leftleg{
-    background-color: grey;
-    width: 40px;
-    height: 30px;
-    border-radius: 100px;
-    margin-left: 20px;    
+    background-color: black;
+    width: 46px;
+    height: 32px;
+    border-radius: 231px 56px 145px 84px; 
+    margin-left: 20px;  
+
+    
 }
 .rightleg{
-    background-color:grey;
-    width: 40px;
-    height: 30px;
-    border-radius: 100px   
+    background-color: black;
+    width: 46px;
+    height: 32px;
+    border-radius: 231px 56px 145px 84px;
 }
-.tail{
-    background-color:grey;
-    height: 10px;
-    width: 75px;
-    margin-top: -56px;
-    margin-inline-start: 200px;
-    border-bottom-right-radius: 10px;
-    border-top-right-radius: 10px;
-    position: relative;
-}
+
 
 .belly{
     height: 130px;
@@ -164,4 +200,5 @@
     border-radius: 33px 40px 0px 0px;
     background-color: blanchedalmond;
     margin-left: 26px;
+    border: 2px solid black;
 }
