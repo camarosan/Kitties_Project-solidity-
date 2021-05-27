@@ -14,6 +14,8 @@
         <link rel="stylesheet" href="client/assets/css/factory.css">
         <link rel="stylesheet" href="client/assets/css/frontend.css">
         <link rel="stylesheet" href="client/assets/css/animation.css">
+        <script type="text/javascript" src="./web3.min.js"></script>
+        
     </head>
     <body>
         <div class="container p-5" style="margin-top: 1vh;margin-bottom: 1vh;">
@@ -71,7 +73,12 @@
                             </div>
                         </div>      
                     </div>
+                    <br>
+                    <div align= 'center'>
+                        <button class = 'white-btn' onclick="createCat()">Create Kitty  </button>
+                    </div>
                     <div class="dnaDiv" id="catDNA">
+                        <br><br>
                         <b>
                         DNA:
                         <!-- Colors -->
@@ -158,4 +165,6 @@
         <script src="client/assets/js/colors.js"></script>
         <script src="client/assets/js/catSettings.js"></script>
         <script src="client/assets/js/catFactory.js"></script>
+        <script src="./main.js"></script>
+        <script src="./abi.js"></script>
 </html>

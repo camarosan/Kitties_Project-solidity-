@@ -108,7 +108,6 @@ function animationVariation(num){
     switch(num) {
         case 1:
         $('#animationcode').html('Legs Animation')
-        console.log('hola')
         return animation1()
         case 2:
         $('#animationcode').html('Tail Animation')

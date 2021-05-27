@@ -15,9 +15,11 @@ contract KittyContract is IERC721,Ownable {
         uint256 dadId, 
         uint256 genes
     );
-    mapping (uint256 => uint256[]) private catFullGenes;
+ 
     mapping (address => uint256) private ownershipTokenCount;
     mapping (uint256 => address) private ownershipTokenID;
+    mapping (uint256 => address) private kittyIndexToApproved;
+    mapping (address => mapping(address => bool)) private _operatorApprovals; 
 
     string  constant  private tName = 'Carlos Kitty Token';
     string  constant private tSymbol = 'CKT';
@@ -68,6 +70,7 @@ contract KittyContract is IERC721,Ownable {
         ownershipTokenID[_tokenId] = _to;       
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
+            delete kittyIndexToApproved[_tokenId];
         }
         emit Transfer(_from, _to, _tokenId);
     }
@@ -104,5 +107,37 @@ contract KittyContract is IERC721,Ownable {
     function getKitty(uint256 kittyId) public view returns(uint256, uint64, uint32, uint32, uint16){
              return (kitties[kittyId].genes, kitties[kittyId].birthTime, kitties[kittyId].mumId,
              kitties[kittyId].dadId, kitties[kittyId].generation); 
+    }
+
+    function approve(address _approved, uint256 _tokenId) external override {
+        require(_owns(msg.sender, _tokenId));
+        kittyIndexToApproved[_tokenId] = _approved;
+        emit Approval(msg.sender, _approved, _tokenId);
+    }
+    
+    function getApproved(uint256 _tokenId) external view override  returns (address) {
+        require(ownershipTokenID[_tokenId]== msg.sender, "You are not the owner of the tokenId");
+        require(_tokenId < kitties.length, "the tokenID does not exist");    
+        return kittyIndexToApproved[_tokenId];
+    }
+    
+    function setApprovalForAll(address _operator, bool _approved) external override {
+        require(_operator != msg.sender);
+        _operatorApprovals[msg.sender][_operator] = _approved;
+        emit ApprovalForAll(msg.sender, _operator,_approved);
+    }
+    
+    function isApprovedForAll(address _owner, address _operator) external view override returns (bool) {
+         return _operatorApprovals[_owner][_operator];
+    }
+
+    function transferFrom(address _from, address _to, uint256 _tokenId) external payable override {
+        require(_to != address(0)); 
+        require(_to != address(this)); 
+        require(_owns(msg.sender, _tokenId) || kittyIndexToApproved[_tokenId] == msg.sender || _operatorApprovals[_from][msg.sender] == true);
+        //Throws unless `msg.sender` is the current owner or is the approved address for this NFT or  is an authorized operator
+        require(_owns(_from, _tokenId)); //Throws if `_from` is not the current owner
+        require(_tokenId < kitties.length, "the tokenID does not exist"); 
+        _transfer(_from,  _to,  _tokenId);
     }
 }
