@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 import "./IERC721.sol";
 import "./Ownable.sol";
+import "./IERC721Receiver.sol";
 //import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
 
@@ -23,6 +24,7 @@ contract KittyContract is IERC721,Ownable {
 
     string  constant  private tName = 'Carlos Kitty Token';
     string  constant private tSymbol = 'CKT';
+    bytes4 internal constant MAGIC_ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)")); // from IERC721 interface
 
     struct Kitty {
         uint256 genes;
@@ -35,6 +37,23 @@ contract KittyContract is IERC721,Ownable {
 
     function close() public onlyOwner { 
         selfdestruct(owner);  
+    }
+
+    /*function supportsInterface(bytes4 _interfaceId) external view returns(bool){ // FOR ERC765
+        return (_interfaceId == _INTERFACE_ID_ERC721 || _interfaceId == _INTERFACE_ID_ERC165);
+    }*/
+
+    function breed(uint256 _dadId, uint256 _mumId) public  {
+        require(_dadId < kitties.length &&_mumId < kitties.length);
+        require(ownershipTokenID[_dadId]==  msg.sender && ownershipTokenID[_mumId]== msg.sender); // check ownership 
+        uint256 dadDna = kitties[_dadId].genes; // you got the DNA 
+        uint256 mumDna = kitties[_mumId].genes;
+        uint256 newGen = kitties[_dadId].generation + kitties[_mumId].generation + 1;  // figure out the generation
+        if (newGen == kitties[_dadId].generation || newGen == kitties[_mumId].generation){
+            newGen += 1;
+        }
+        uint256 newDna= _mixDna(dadDna, mumDna);
+        _createKitty(_mumId, _dadId, newGen,newDna, msg.sender); // create a new cat with te new properties, give it to the msg.sender   
     }
 
     function balanceOf(address owner) external view override returns (uint256 balance){
@@ -109,7 +128,7 @@ contract KittyContract is IERC721,Ownable {
              kitties[kittyId].dadId, kitties[kittyId].generation); 
     }
 
-    function approve(address _approved, uint256 _tokenId) external override {
+    function approve(address _approved, uint256 _tokenId) external override{
         require(_owns(msg.sender, _tokenId));
         kittyIndexToApproved[_tokenId] = _approved;
         emit Approval(msg.sender, _approved, _tokenId);
@@ -133,11 +152,56 @@ contract KittyContract is IERC721,Ownable {
 
     function transferFrom(address _from, address _to, uint256 _tokenId) external payable override {
         require(_to != address(0)); 
-        require(_to != address(this)); 
+        //require(_to != address(this)); 
         require(_owns(msg.sender, _tokenId) || kittyIndexToApproved[_tokenId] == msg.sender || _operatorApprovals[_from][msg.sender] == true);
         //Throws unless `msg.sender` is the current owner or is the approved address for this NFT or  is an authorized operator
         require(_owns(_from, _tokenId)); //Throws if `_from` is not the current owner
         require(_tokenId < kitties.length, "the tokenID does not exist"); 
         _transfer(_from,  _to,  _tokenId);
     }
-}
+
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata data) external override{
+        require(_owns(msg.sender, _tokenId) || kittyIndexToApproved[_tokenId] == msg.sender || _operatorApprovals[_from][msg.sender] == true);
+        require(_owns(_from, _tokenId));
+        require(_to != address(0));
+        require(_tokenId < kitties.length, "the tokenID does not exist");
+        _SafeTransferFrom(_from, _to, _tokenId, data);
+    }
+
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external override{
+        require(_owns(msg.sender, _tokenId) || kittyIndexToApproved[_tokenId] == msg.sender || _operatorApprovals[_from][msg.sender] == true);
+        require(_owns(_from, _tokenId));
+        require(_to != address(0));
+        require(_tokenId < kitties.length, "the tokenID does not exist");
+        _SafeTransferFrom(_from, _to, _tokenId, '0');
+    }
+
+    function _SafeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory _data) internal {
+        _transfer(_from, _to, _tokenId);
+        require(_checkERC721Support(_from, _to, _tokenId, _data));
+    }
+
+    function _checkERC721Support(address _from, address _to, uint256 _tokenId, bytes memory _data) internal returns(bool){
+        if(!_isContract(_to)){ // if the address is not a contract is easy otherwise you need to know if this contract can manipulate ERC721 tokens
+            return true;    
+        }
+        bytes4 returnData = IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data); // call onERC721Received() function(in ERC721 you must include this function) on IERC721Receiver contract
+        return returnData == MAGIC_ERC721_RECEIVED;
+    }
+
+    function _isContract(address _to) internal view returns (bool){
+        uint32 size; 
+        assembly { // only to talk directly.  machine code 
+            size := extcodesize(_to) // gets the size 
+        }
+        return size > 0; // for a contract must be > 0 
+    }
+
+    function _mixDna(uint256 _dadDna, uint256 _mumDna) internal pure returns (uint256){
+        uint256 firstHalf = _dadDna / 100000000;
+        uint256 secondHalf = _mumDna % 100000000; 
+        uint256 newDna = firstHalf * 100000000;
+        newDna = newDna + secondHalf; 
+        return newDna; 
+    }
+}   
