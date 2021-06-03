@@ -74,7 +74,8 @@ body {
     height: 70px;
     display: inline-flex;
     position: absolute;
-    transform: translate(18%, 53%);
+    left: 40px;
+    top: 34px;
 }
 .eye, .eye2{
     background-color: white;
