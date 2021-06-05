@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <script type="text/javascript" src="../client/assets/js/jquery-3.4.1.js"></script>
@@ -15,21 +16,22 @@
     <body>
         <div class=" light-b-shadow" align = "center">
             <p class="bg-white pt-0">Academy-kitties
-            <button class ='red-btn' onClick = 'getCats()'>Home</button>
+            <button class ='red-btn'>Home</button>
+            <button class ='red-btn'>Catalogue</button>
             <button class ='red-btn' onclick="location.href='../'">Kitties Factory</button>
             </p>
         </div>
         <div class="container p-5"  >
             <h1 class="c-white">Cat Catalogue</h1>
-            <P class="c-white">Your Kitties</P>
-            <p style="width:100%" id= "1">
-            </p>
+            <p class="c-white">Checkout the Kitties</p>
+            <button class="white-btn" id="renderKitties">Render </button>
+            <button class="white-btn" onclick="breedingKitties()">Breeding </button>
         </div>
+        <p style="width:100%" id= "1">
+        </p>
     </body>
-    <script src="../client/assets/js/colors.js"></script>
+        <script src="../client/assets/js/colors.js"></script>
         <script src="../client/assets/js/catCatalogue.js"></script>
         <script src="../client/assets/js/catFactory.js"></script>
-        <!--<script src="../client/assets/js/catSettings.js"></script>-->
-        <!--<script src="../main.js"></script>-->
         <script src="../abi.js"></script>  
 </html>

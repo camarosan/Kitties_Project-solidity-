@@ -5,6 +5,17 @@
     padding-left: 0px;
     padding-bottom: 100px;
 }
+.catBoxCatalog {
+    background-color: #e2efff;
+    border-radius: 10px;
+    padding-top: 50px;
+    padding-left: 0px;
+    padding-bottom: 100px;
+    float: left;
+    left: 150px;
+}
+
+
 
 .cattributes {
     padding: 25px;

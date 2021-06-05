@@ -3,14 +3,14 @@ var contractInstance;
 
 $(document).ready(function() {
     window.ethereum.enable().then(function(accounts){
-      contractInstance = new web3.eth.Contract(window.abi, "0xcd6fb49aad4d8a65781486e0c2f813cadea3f27b16aa468d56d17d3c0c818fb8", {from: accounts[0]});
+      contractInstance = new web3.eth.Contract(window.abi, "0xc7E8420a2715fB2474963279AD91e57fcE2998e3", {from: accounts[0]});
       console.log(contractInstance);
     });  
 });
 
 
 function createCat() {
-  var configDeposit = {value: web3.utils.toWei('0.1', "ether")}
+  var configDeposit = {value: web3.utils.toWei('0.01', "ether")}
   var DNA = getDna();
   contractInstance.methods.createKittyGen0(DNA).send(configDeposit, function(error, txHash) {
         if(error)
