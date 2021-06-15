@@ -1,7 +1,8 @@
-var colors = Object.values(allColors())
 var web3 = new Web3(Web3.givenProvider);
 var contractInstance;
+var contractInstance2;
 var tokenCount; 
+var tokens  = []; 
 var arrayDNA = [];
 var j= 0; 
 var catBoxFull = '';
@@ -11,23 +12,37 @@ var catsIds = [];
 $(document).ready(function() {
   window.ethereum.enable().then(function(accounts){
     contractInstance = new web3.eth.Contract(window.abi, "0xc7E8420a2715fB2474963279AD91e57fcE2998e3", {from: accounts[0]});
-    catCatalogue() 
+    contractInstance2 = new web3.eth.Contract(window.abi, "0xEa77666bCe97289f19F79215811f97A16b9dC4DE", {from: accounts[0]});
   })
 });
 
-function catCatalogue() {
+
+$('#allKitties').click(()=>{
     contractInstance.methods.totalSupply().call().then((res)=>{
-      tokenCount = parseInt(res);
-      for(var i=0; i<tokenCount; i++){
-        kittiesDNA(i);
-      } 
-    })
-}
+        tokenCount = parseInt(res);
+        for(var i=0; i<tokenCount; i++){
+          kittiesDNA(i, tokenCount);
+          createCatBox(i, tokenCount,1); // 1 htmlId
+        } 
+      })
+      setTimeout(renderKitties,2000);
+})
+
+$('#offerKitties').click(()=>{
+    contractInstance2.methods.getAllTokenOnSale().call().then((res)=>{
+        tokens = [...res]    
+            tokens.map((value)=>{
+                 kittiesDNA(value);
+                 createCatBox(value,tokens.length,2);// 2 htmlId
+           })   
+           setTimeout(renderKittiesMarket,2000)
+       })
+})
 
 function kittiesDNA(i) { //i is ID from blokchain 
         contractInstance.methods.getKitty(i).call().then(function(res){
           var DNA = {
-            headcolor: res[0].slice(0,2),
+            "headcolor": res[0].slice(0,2),
             "mouthcolor": res[0].slice(2,4),
             "eyescolor": res[0].slice(4,6),
             "earscolor": res[0].slice(6,8),
@@ -43,14 +58,32 @@ function kittiesDNA(i) { //i is ID from blokchain
             "birthDate": res[1],
             "id": i
             };
-            arrayDNA.push(DNA);  
-            createCatBox(i)
+            arrayDNA.push(DNA);   
         })  
 }
 
-function createCatBox(id){
-j++
-    if (j<= tokenCount){
+function createCatBox(id, count, htmlId){
+    j++
+    if (htmlId=== 1){
+    var catalogue = 
+    `<div class="offerDiv">
+        <label for="offerInput`+id+`" >Offer for cat ID: ${id}  (1-100 in ETH):</label><br>
+        <input type="number" id="offerInput`+id+`"  name="offerInput`+id+`" min="1" max="100">
+        <button onclick="catOffer(`+id+`)">Offer</button>
+        <label for="breedCheck" > Breeding</label>
+        <input type="checkbox" id="breedCheck`+id+`" onclick="breeding(`+id+`)"></input>
+        <p id="breedText`+id+`" style="display:none">CHECKED! CAT ID:  `+id+`</p>
+    </div>`
+    }
+    else {
+        var catalogue = `<div class="marketDiv">
+        <button class ='white-btn'  onclick= "buyCat(`+id+`)">Buy</button>
+        <button class ='white-btn'  onclick= "removeOffer(`+id+`)">Remove </button>
+        <button class="white-btn" onclick="priceCat(`+id+`)">Price</button>
+        <span id="idPrice`+id+`"></span>
+        </div>`
+    }
+    if (j<= count){
     var catBox = 
     `<div class="col-lg-4 catBoxCatalog m-2 light-b-shadow" id= "catBox`+id+`">
         <div class='cat' id= "cat`+id+`">
@@ -102,12 +135,11 @@ j++
             </div>      
         </div>
         <br>
-        <br>
         <div class="dnaDiv" id="catDNA">
             DNA:
             <!-- Colors -->
             <span id="dnabody`+id+`"></span>
-            <span id="dnamouth`+id+`"></span>
+            <span id="dnamouth`+id+`"></span>   
             <span id="dnaeyes`+id+`"></span>
             <span id="dnaears`+id+`"></span>
             <!-- Cattributes -->
@@ -122,51 +154,68 @@ j++
         <br>    
             Mom ID: <span id= "momId`+id+`"></span>
             Dad ID: <span id= "dadId`+id+`"></span>
+            Cat ID: `+id+`
             Gen: <span id= "generation`+id+`"></span><br>
             <!--Birth Time: <span id= "birthTime"></span>-->
-            <label for="breedCheck" > Breeding</label>
-            <input type="checkbox" id="breedCheck`+id+`" onclick="breeding(`+id+`)">
-            <p id="breedText`+id+`" style="display:none">CHECKED! `+id+`</p>
         </div>
+        `+catalogue+`
     </div>`;
     //document.getElementById("1").append(catBox);
     //document.body.innerHTML = `<h1>${catBoxFull} </h1>`
     }
 catBoxFull = catBoxFull.concat(catBox);
-document.getElementById('1').innerHTML = catBoxFull;
+//document.getElementById(htmlId).innerHTML = catBoxFull;
 }
 
- //function renderALL(tokenCount) {
-    $('#renderKitties').click(()=>{
-    for(var l=0; l<tokenCount; l++){ 
-        headColor(colors[arrayDNA[l].headcolor],arrayDNA[l].headcolor, l)
-        tailColor(colors[arrayDNA[l].mouthcolor],arrayDNA[l].mouthcolor,l)
-        eyeColor(colors[arrayDNA[l].eyescolor],arrayDNA[l].eyescolor, l)
-        earColor(colors[arrayDNA[l].earscolor],arrayDNA[l].earscolor, l)
-        eyeVariation(arrayDNA[l].eyesShape,l)  
-        decorationVariation(arrayDNA[l].decorationPattern, l)
-        pattern(colors[arrayDNA[l].decorationMidcolor],arrayDNA[l].decorationMidcolor, l)
-        pattern2(colors[arrayDNA[l].decorationSidescolor],arrayDNA[l].decorationSidescolor, l)
-        animationVariation(arrayDNA[l].animation, l) 
-        $(`#momId${l}`).html(arrayDNA[l].motherId)
-        $(`#dadId${l}`).html(arrayDNA[l].fatherId)
-        $(`#birthTime${l}`).html(arrayDNA[l].birthDate)
-        $(`#generation${l}`).html(arrayDNA[l].catGeneration) 
-        $(`#dnaspecial${l}`).html(arrayDNA[l].lastNum)
-     }
-    })
+  function render(l){
+    headColor(colors[arrayDNA[l].headcolor],arrayDNA[l].headcolor, arrayDNA[l].id)
+    tailColor(colors[arrayDNA[l].mouthcolor],arrayDNA[l].mouthcolor,arrayDNA[l].id)
+    eyeColor(colors[arrayDNA[l].eyescolor],arrayDNA[l].eyescolor, arrayDNA[l].id)
+    earColor(colors[arrayDNA[l].earscolor],arrayDNA[l].earscolor, arrayDNA[l].id)
+    eyeVariation(arrayDNA[l].eyesShape,arrayDNA[l].id)  
+    decorationVariation(arrayDNA[l].decorationPattern, arrayDNA[l].id)
+    pattern(colors[arrayDNA[l].decorationMidcolor],arrayDNA[l].decorationMidcolor, arrayDNA[l].id)
+    pattern2(colors[arrayDNA[l].decorationSidescolor],arrayDNA[l].decorationSidescolor, arrayDNA[l].id)
+    animationVariation(arrayDNA[l].animation, arrayDNA[l].id) 
+    $(`#momId${arrayDNA[l].id}`).html(arrayDNA[l].motherId)
+    $(`#dadId${arrayDNA[l].id}`).html(arrayDNA[l].fatherId)
+    $(`#birthTime${arrayDNA[l].id}`).html(arrayDNA[l].birthDate)
+    $(`#generation${arrayDNA[l].id}`).html(arrayDNA[l].catGeneration) 
+    $(`#dnaspecial${arrayDNA[l].id}`).html(arrayDNA[l].lastNum)
+  }
 
-function breeding(id) {
+    function renderKitties() {
+    document.getElementById('1').innerHTML = catBoxFull;
+    for(var l=0; l<tokenCount; l++){ 
+        render(l);
+     } 
+  }
+
+    function renderKittiesMarket() {
+        document.getElementById('2').innerHTML = catBoxFull;
+        for(var l=0; l<= tokens.length; l++){
+            render(l);
+        }
+    }
+    
+// breeding  functions 
+function breeding(id) { // BUG IF WE UNCHECK 
     var checkBox = document.getElementById(`breedCheck${id}`);
     var text = document.getElementById(`breedText${id}`);
     if (checkBox.checked == true){
         text.style.display = "block";
         breedIds++;
         catsIds.push(id);
-    } else {
+    } 
+    else {
         text.style.display = "none";
         breedIds--;
-  }
+        for( var i = 0; i < catsIds.length; i++){ 
+            if ( catsIds[i] === id) { 
+                catsIds.splice(i); 
+            }
+        }
+    }
 }
 
 function breedingKitties () {
@@ -196,6 +245,52 @@ function breedingKitties () {
       });
     } 
     else {
-        alert("incorrect")
+        alert("incorrect you not selected two cats")
     }
+}
+
+// Market functions 
+function catOffer(id) {
+    var offer = String(document.getElementById(`offerInput${id}`).value);
+    offer = web3.utils.toWei(offer);
+    console.log(offer); 
+    contractInstance2.methods.setOffer(offer,id).send((error,txHash)=>{
+        if(error){
+            console.log(error)
+            alert("You cannot offer you are not the cat owner or there is an offer now")
+        }
+        else {
+            console.log(txHash)   
+        }    
+    });   
+}
+
+function buyCat(catId) {
+    contractInstance2.methods.getOffer(catId).call().then((res)=>{
+        console.log(res.price);
+        var configETH = {value: web3.utils.toWei(res.price, "wei")}
+        contractInstance2.methods.buyKitty(catId).send(configETH);            
+    })
+}
+
+function priceCat(catId){
+    contractInstance2.methods.getOffer(catId).call().then((res)=>{
+        console.log(typeof(res.price));
+        var valueETH= res.price.slice(0,-18);
+        $(`#idPrice${catId}`).html(valueETH+" ether");
+    })
+}
+
+function removeOffer(catId) {
+    contractInstance2.methods.removeOffer(catId).send(function(error, txHash) {
+        if(error){
+            console.log(error)
+            alert("Error to remove you are not the owner")
+        }
+        else {
+            console.log(txHash)   
+
+        }    
+    }); 
+
 }

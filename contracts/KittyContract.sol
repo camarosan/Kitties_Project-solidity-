@@ -64,11 +64,11 @@ contract KittyContract is IERC721,Ownable {
         return kitties.length;
     }
 
-    function name() external view override returns (string memory tokenName) {
+    function name() external pure override returns (string memory tokenName) {
         return tName;
     }
 
-    function symbol() external view override returns (string memory tokenSymbol) {
+    function symbol() external pure override returns (string memory tokenSymbol) {
         return tSymbol;
     }
 
@@ -129,7 +129,13 @@ contract KittyContract is IERC721,Ownable {
     }
 
     function approve(address _approved, uint256 _tokenId) external override{
-        require(_owns(msg.sender, _tokenId));
+        require(_owns(msg.sender, _tokenId),"msg.sender is not the owner");
+        kittyIndexToApproved[_tokenId] = _approved;
+        emit Approval(msg.sender, _approved, _tokenId);
+    }
+
+    function approve(address _approved, uint256 _tokenId, address from) external {
+        require(_owns(from, _tokenId),"msg.sender is not the owner");
         kittyIndexToApproved[_tokenId] = _approved;
         emit Approval(msg.sender, _approved, _tokenId);
     }
@@ -198,10 +204,26 @@ contract KittyContract is IERC721,Ownable {
     }
 
     function _mixDna(uint256 _dadDna, uint256 _mumDna) internal pure returns (uint256){
-        uint256 firstHalf = _dadDna / 100000000;
+       /* uint256 firstHalf = _dadDna / 100000000;
         uint256 secondHalf = _mumDna % 100000000; 
         uint256 newDna = firstHalf * 100000000;
-        newDna = newDna + secondHalf; 
-        return newDna; 
+        newDna = newDna + secondHalf; */
+        uint256 mod= 10000000000000000;
+        uint256 div= 100000000000000;
+        uint256 newDna= 0;
+        uint i;
+
+        for (i=1; i<=8; i++){
+            if(i%2==0) {// _dadDna wins 
+            newDna = (newDna*100)+((_dadDna%mod)/div);
+            }
+            else { // _mumDna wins
+            newDna = (newDna*100)+((_mumDna%mod)/div);
+            }
+            mod = mod/100;
+            div = div/100;
+        }
+        return newDna;
     }
+        
 }   

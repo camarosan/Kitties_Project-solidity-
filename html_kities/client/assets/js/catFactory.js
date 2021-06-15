@@ -15,14 +15,13 @@ function genColors(){
 }
 
 function headColor(color,code, id) { // Rewrite all  to work with HTML Ids ant not classes
-    console.log(id);
     $(`#head${id}, #body${id}`).css('background', '#' + color)  //This changes the color of the cat
     $('#headcode').html('code: '+code) //This updates text of the badge next to the slider
     $(`#dnabody${id}`).html(code) //This updates the body color part of the DNA that is displayed below the cat
 }
 
 function tailColor(color,code, id) {
-    $(`#body${id}, #tail${id}`).css('background', '#' + color)  
+    $(`#tail${id}`).css('background', '#' + color)  
     $('#tailcode').html('code: '+code) 
     $(`#dnamouth${id}`).html(code) 
 }

@@ -4,7 +4,6 @@ var contractInstance;
 $(document).ready(function() {
     window.ethereum.enable().then(function(accounts){
       contractInstance = new web3.eth.Contract(window.abi, "0xc7E8420a2715fB2474963279AD91e57fcE2998e3", {from: accounts[0]});
-      console.log(contractInstance);
     });  
 });
 
@@ -31,12 +30,3 @@ function createCat() {
   });
 }
 
-/*function getCats() {
-  contractInstance.methods.getKitty(1).call().then(function(res){
-    console.log(res);
-   /*for (const [key, value] of Object.entries(res)) {
-      console.log(`${key}: ${value}`);
-    }
-})
-
-}*/

@@ -3,7 +3,7 @@ const AssertionError = require('assertion-error');
 const truffleAssert = require('truffle-assertions');
 const assert = require('assert');
 
-contract(KittyContract, accounts => {
+contract.skip(KittyContract, accounts => {
     it(" transferFrom is not possible there is no token 0 ", async () => {
         let kittyContract = await KittyContract.deployed(); 
         await truffleAssert.reverts(

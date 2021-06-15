@@ -120,7 +120,7 @@ $('#defaultCat').click(()=>{
 })
 
 // for random cats
-function randomNumber() {
+function randomNumber() { 
   let random = Math.floor(Math.random()*100)
     if (random == 0) {
     random = 10
@@ -136,6 +136,7 @@ function randomNumber() {
 
 $('#randomCat').click(()=>{
     let random = randomNumber()
+    if (random >=90){random  = (random%10)+10} // if the program  put <=90 there is an error on javascript
     headColor(colors[random],random, '00')
     $('#bodycolor').val(random)
     random = randomNumber()
