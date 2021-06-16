@@ -9,9 +9,9 @@ $(document).ready(function() {
 
 
 function createCat() {
-  var configDeposit = {value: web3.utils.toWei('0.01', "ether")}
+  var configDeposit = {value: web3.utils.toWei('0.01', "ether")}// not used it
   var DNA = getDna();
-  contractInstance.methods.createKittyGen0(DNA).send(configDeposit, function(error, txHash) {
+  contractInstance.methods.createKittyGen0(DNA).send(function(error, txHash) {
         if(error)
             console.log(error)
         else 

@@ -62,13 +62,18 @@ contract Marketplace is IKittyMarketPlace {
     function _removeOffer(uint256 _tokenId) internal  returns(uint n) {
         uint i;
         uint j;
-        if (tokensOnSale.length-1 == _tokenId){
+        if (tokensOnSale.length-1 == 0){ // if only has one value on tokensOnSale
             tokensOnSale.pop();
             Offers.pop();
             return 0;
         }
         while (i<= tokensOnSale.length){
             if (tokensOnSale[i] == _tokenId){
+                if (i== tokensOnSale.length-1){// if a have two elements and i want to remove the second
+                     tokensOnSale.pop();
+                     Offers.pop();
+                    return 0;
+                    }
                 tokensOnSale[i] = tokensOnSale[i+1];
                 Offers[i]= Offers[i+1];
                 j= 1;

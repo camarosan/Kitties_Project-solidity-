@@ -21,11 +21,11 @@ $('#allKitties').click(()=>{
     contractInstance.methods.totalSupply().call().then((res)=>{
         tokenCount = parseInt(res);
         for(var i=0; i<tokenCount; i++){
-          kittiesDNA(i, tokenCount);
-          createCatBox(i, tokenCount,1); // 1 htmlId
+          kittiesDNA(i);
+          createCatBox(i, tokenCount,1); 
         } 
       })
-      setTimeout(renderKitties,2000);
+      setTimeout(renderKitties,2000,2);
 })
 
 $('#offerKitties').click(()=>{
@@ -33,13 +33,13 @@ $('#offerKitties').click(()=>{
         tokens = [...res]    
             tokens.map((value)=>{
                  kittiesDNA(value);
-                 createCatBox(value,tokens.length,2);// 2 htmlId
+                 createCatBox(value,tokens.length);
            })   
            setTimeout(renderKittiesMarket,2000)
        })
 })
 
-function kittiesDNA(i) { //i is ID from blokchain 
+function kittiesDNA(i) { // from blokchain 
         contractInstance.methods.getKitty(i).call().then(function(res){
           var DNA = {
             "headcolor": res[0].slice(0,2),
@@ -185,21 +185,21 @@ catBoxFull = catBoxFull.concat(catBox);
   }
 
     function renderKitties() {
-    document.getElementById('1').innerHTML = catBoxFull;
+    document.getElementById('1').innerHTML = catBoxFull; //  1 htmlId 
     for(var l=0; l<tokenCount; l++){ 
         render(l);
      } 
   }
 
     function renderKittiesMarket() {
-        document.getElementById('2').innerHTML = catBoxFull;
+        document.getElementById('2').innerHTML = catBoxFull; //  2 htmlId 
         for(var l=0; l<= tokens.length; l++){
             render(l);
         }
     }
     
 // breeding  functions 
-function breeding(id) { // BUG IF WE UNCHECK 
+function breeding(id) { 
     var checkBox = document.getElementById(`breedCheck${id}`);
     var text = document.getElementById(`breedText${id}`);
     if (checkBox.checked == true){
@@ -210,6 +210,8 @@ function breeding(id) { // BUG IF WE UNCHECK
     else {
         text.style.display = "none";
         breedIds--;
+        console.log(breedIds)
+
         for( var i = 0; i < catsIds.length; i++){ 
             if ( catsIds[i] === id) { 
                 catsIds.splice(i); 
@@ -228,8 +230,6 @@ function breedingKitties () {
             }
             else {
                 console.log(txHash)   
-                breedIds =0;
-                array.splice(0, array.length) 
             }    
         }); 
         contractInstance.once('Birth', function(error, event){ //listener
@@ -245,7 +245,7 @@ function breedingKitties () {
       });
     } 
     else {
-        alert("incorrect you not selected two cats")
+        alert("incorrect you must select two cats")
     }
 }
 
@@ -289,7 +289,6 @@ function removeOffer(catId) {
         }
         else {
             console.log(txHash)   
-
         }    
     }); 
 

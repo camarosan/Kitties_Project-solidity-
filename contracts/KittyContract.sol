@@ -48,9 +48,13 @@ contract KittyContract is IERC721,Ownable {
         require(ownershipTokenID[_dadId]==  msg.sender && ownershipTokenID[_mumId]== msg.sender); // check ownership 
         uint256 dadDna = kitties[_dadId].genes; // you got the DNA 
         uint256 mumDna = kitties[_mumId].genes;
-        uint256 newGen = kitties[_dadId].generation + kitties[_mumId].generation + 1;  // figure out the generation
-        if (newGen == kitties[_dadId].generation || newGen == kitties[_mumId].generation){
-            newGen += 1;
+        uint256 newGen;  // figure out the generation
+        if(kitties[_dadId].generation >= kitties[_mumId].generation){
+            newGen = kitties[_dadId].generation + 1;
+        }
+        else 
+        {
+            newGen = kitties[_mumId].generation + 1;
         }
         uint256 newDna= _mixDna(dadDna, mumDna);
         _createKitty(_mumId, _dadId, newGen,newDna, msg.sender); // create a new cat with te new properties, give it to the msg.sender   
