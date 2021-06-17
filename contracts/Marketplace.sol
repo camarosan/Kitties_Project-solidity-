@@ -69,7 +69,7 @@ contract Marketplace is IKittyMarketPlace {
         }
         while (i<= tokensOnSale.length){
             if (tokensOnSale[i] == _tokenId){
-                if (i== tokensOnSale.length-1){// if a have two elements and i want to remove the second
+                if (i== tokensOnSale.length-1){// if you have two elements and you  want to remove the second
                      tokensOnSale.pop();
                      Offers.pop();
                     return 0;
@@ -84,7 +84,7 @@ contract Marketplace is IKittyMarketPlace {
                      Offers.pop();
                     return 0;
                 }
-                tokensOnSale[i] = tokensOnSale[i+j];
+                tokensOnSale[i] = tokensOnSale[i+j]; 
                 Offers[i]= Offers[i+j];
             }
             i++;

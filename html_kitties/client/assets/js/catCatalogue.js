@@ -210,8 +210,6 @@ function breeding(id) {
     else {
         text.style.display = "none";
         breedIds--;
-        console.log(breedIds)
-
         for( var i = 0; i < catsIds.length; i++){ 
             if ( catsIds[i] === id) { 
                 catsIds.splice(i); 
