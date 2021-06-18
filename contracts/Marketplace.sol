@@ -117,6 +117,7 @@ contract Marketplace is IKittyMarketPlace {
     function buyKitty(uint256 _tokenId) external override payable {
         require(tokenIdToOffer[_tokenId].active ==true, "There must be an active offer for _tokenId");  
         require (tokenIdToOffer[_tokenId].price >= msg.value, "The msg.value needs to equal the price of _tokenId"); 
+        require(addr.ownerOf(_tokenId)!= msg.sender,"The Owner can't buy their kitties");
         uint transferValue = msg.value;
         tokenIdToOffer[_tokenId].seller.transfer(transferValue);//Sends the funds to the seller
         addr.transferFrom(tokenIdToOffer[_tokenId].seller, msg.sender, _tokenId); //transfers the token using transferFrom in Kittycontract.

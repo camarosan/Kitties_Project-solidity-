@@ -136,7 +136,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"TxType\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"MarketTransaction\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"buyKitty\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllTokenOnSale\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"listOfOffers\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"getOffer\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"seller\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"active\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"removeOffer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_kittyContractAddress\",\"type\":\"address\"}],\"name\":\"setKittyContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"setOffer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"buyKitty(uint256)\":{\"notice\":\"Executes the purchase of _tokenId. Sends the funds to the seller and transfers the token using transferFrom in Kittycontract. Emits the MarketTransaction event with txType \\\"Buy\\\". Requirement: The msg.value needs to equal the price of _tokenId Requirement: There must be an active offer for _tokenId\"},\"getAllTokenOnSale()\":{\"notice\":\"Get all tokenId's that are currently for sale. Returns an empty arror if none exist.\"},\"getOffer(uint256)\":{\"notice\":\"Get the details about a offer for _tokenId. Throws an error if there is no active offer for _tokenId.\"},\"removeOffer(uint256)\":{\"notice\":\"Removes an existing offer. Emits the MarketTransaction event with txType \\\"Remove offer\\\" Requirement: Only the seller of _tokenId can remove an offer.\"},\"setKittyContract(address)\":{\"notice\":\"Set the current KittyContract address and initialize the instance of Kittycontract. Requirement: Only the contract owner can call.\"},\"setOffer(uint256,uint256)\":{\"notice\":\"Creates a new offer for _tokenId for the price _price. Emits the MarketTransaction event with txType \\\"Create offer\\\" Requirement: Only the owner of _tokenId can create an offer. Requirement: There can only be one active offer for a token at a time. Requirement: Marketplace contract (this) needs to be an approved operator when the offer is created.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/IKittyMarketplace.sol\":\"IKittyMarketPlace\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/IERC721.sol\":{\"keccak256\":\"0x837d96af112e74a5f54908001daec6f8da1fe00985eeccc5beed779b58562998\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1a6973c9017a8507e4223024b0e101f93ea452668a8e5a1bf39c7388f3cd8a6d\",\"dweb:/ipfs/QmUvYSW9Chbz15ESHXMRM9sX6kooNzzApdFBSPiksHNZ3B\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/IERC721Receiver.sol\":{\"keccak256\":\"0x54eb6d3de1f43c739b91d675b81d3418c4cdd04e33ccc63e1365f1dd79d4a989\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://49b5061e1fc8b771555932654a1bc986020d866af935c99054657d0260f91562\",\"dweb:/ipfs/QmSGgQ2NboN5Yu3tywSwU3ukyg7VbBqKxY23wrMWRnoHDT\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/IKittyMarketplace.sol\":{\"keccak256\":\"0x094e7d1b944becf5367ed8ccbfca8b53d81f6781a064af59398f05f8d4a240dd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6097bced98dabbed6ba214f0b5f1b1b4c7bbac52db604ebac1e9e7345cc510f1\",\"dweb:/ipfs/QmRAiSMvyqdLepmqXDXCft3itwPDJKpfTGvz6X8zUngf2q\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/Kittycontract.sol\":{\"keccak256\":\"0x5339451265598b8f64578b83fdbae594b021e565e57dcada2e504d3e59a137af\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c9cd3cb12098fa7a2d9b929ac2301ea0a0b7725253a61b8a646f2866e95ffef5\",\"dweb:/ipfs/QmPzKWxLeTwf6Jc9a1yACf3at9Gk6y15423tTM7EpYD5k8\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/Ownable.sol\":{\"keccak256\":\"0x8b01e916d1d9e0c9c04a3ac09583a2243706c27a67c84fd5f941b5a42d2da260\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://392daf0bcbfbf5597d03d479f8f7fc8e40b1c100e8e68548b3d40c0400af6890\",\"dweb:/ipfs/QmbZu9C3ag6bef3or5xirsvAigmKAS5hLxHwcQSQ69RhGk\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x2526b7c6a366fc211bbc176078ab02b83833e7682abcc5b3bed9d700b34e2a3e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5f9529d3d365e8415155cee11394e0f7c0de2152b601b7e77508fce16cb4a509\",\"dweb:/ipfs/QmVhbcLVsAzvqfjsdLwy25XMjgVJm7Z3w2JCNiNbZF2GHT\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"TxType\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"MarketTransaction\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"buyKitty\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllTokenOnSale\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"listOfOffers\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"getOffer\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"seller\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"active\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"removeOffer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_kittyContractAddress\",\"type\":\"address\"}],\"name\":\"setKittyContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"setOffer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"buyKitty(uint256)\":{\"notice\":\"Executes the purchase of _tokenId. Sends the funds to the seller and transfers the token using transferFrom in Kittycontract. Emits the MarketTransaction event with txType \\\"Buy\\\". Requirement: The msg.value needs to equal the price of _tokenId Requirement: There must be an active offer for _tokenId\"},\"getAllTokenOnSale()\":{\"notice\":\"Get all tokenId's that are currently for sale. Returns an empty arror if none exist.\"},\"getOffer(uint256)\":{\"notice\":\"Get the details about a offer for _tokenId. Throws an error if there is no active offer for _tokenId.\"},\"removeOffer(uint256)\":{\"notice\":\"Removes an existing offer. Emits the MarketTransaction event with txType \\\"Remove offer\\\" Requirement: Only the seller of _tokenId can remove an offer.\"},\"setKittyContract(address)\":{\"notice\":\"Set the current KittyContract address and initialize the instance of Kittycontract. Requirement: Only the contract owner can call.\"},\"setOffer(uint256,uint256)\":{\"notice\":\"Creates a new offer for _tokenId for the price _price. Emits the MarketTransaction event with txType \\\"Create offer\\\" Requirement: Only the owner of _tokenId can create an offer. Requirement: There can only be one active offer for a token at a time. Requirement: Marketplace contract (this) needs to be an approved operator when the offer is created.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/IKittyMarketplace.sol\":\"IKittyMarketPlace\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/IERC721.sol\":{\"keccak256\":\"0x837d96af112e74a5f54908001daec6f8da1fe00985eeccc5beed779b58562998\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1a6973c9017a8507e4223024b0e101f93ea452668a8e5a1bf39c7388f3cd8a6d\",\"dweb:/ipfs/QmUvYSW9Chbz15ESHXMRM9sX6kooNzzApdFBSPiksHNZ3B\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/IERC721Receiver.sol\":{\"keccak256\":\"0x54eb6d3de1f43c739b91d675b81d3418c4cdd04e33ccc63e1365f1dd79d4a989\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://49b5061e1fc8b771555932654a1bc986020d866af935c99054657d0260f91562\",\"dweb:/ipfs/QmSGgQ2NboN5Yu3tywSwU3ukyg7VbBqKxY23wrMWRnoHDT\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/IKittyMarketplace.sol\":{\"keccak256\":\"0x094e7d1b944becf5367ed8ccbfca8b53d81f6781a064af59398f05f8d4a240dd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6097bced98dabbed6ba214f0b5f1b1b4c7bbac52db604ebac1e9e7345cc510f1\",\"dweb:/ipfs/QmRAiSMvyqdLepmqXDXCft3itwPDJKpfTGvz6X8zUngf2q\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/Kittycontract.sol\":{\"keccak256\":\"0xf5b5cc30e7259dc8685b9c2fe41549ffdb0b2a88c4d5ea4d1234a5e4afa54827\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://71cd68acddca77292dfe2361a0bab25674a2243c711167786e038ed38beff564\",\"dweb:/ipfs/QmRks4GCGy1oyZmqSFWHiyKxd1dbMunm7my1AE8AQWssjf\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/contracts/Ownable.sol\":{\"keccak256\":\"0x8b01e916d1d9e0c9c04a3ac09583a2243706c27a67c84fd5f941b5a42d2da260\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://392daf0bcbfbf5597d03d479f8f7fc8e40b1c100e8e68548b3d40c0400af6890\",\"dweb:/ipfs/QmbZu9C3ag6bef3or5xirsvAigmKAS5hLxHwcQSQ69RhGk\"]},\"/E/Importante/Programas creados imagenes iso etc/Programas blockchain/Ethereum Truffle/Kitties_project/node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x2526b7c6a366fc211bbc176078ab02b83833e7682abcc5b3bed9d700b34e2a3e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5f9529d3d365e8415155cee11394e0f7c0de2152b601b7e77508fce16cb4a509\",\"dweb:/ipfs/QmVhbcLVsAzvqfjsdLwy25XMjgVJm7Z3w2JCNiNbZF2GHT\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -159,13 +159,13 @@
         212
       ],
       "KittyContract": [
-        2016
+        1199
       ],
       "Ownable": [
-        2044
+        1227
       ],
       "SafeMath": [
-        2356
+        1539
       ]
     },
     "id": 213,
@@ -190,7 +190,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 213,
-        "sourceUnit": 2017,
+        "sourceUnit": 1200,
         "src": "57:29:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -202,7 +202,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 213,
-        "sourceUnit": 2045,
+        "sourceUnit": 1228,
         "src": "88:23:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -882,13 +882,13 @@
         212
       ],
       "KittyContract": [
-        2016
+        1199
       ],
       "Ownable": [
-        2044
+        1227
       ],
       "SafeMath": [
-        2356
+        1539
       ]
     },
     "id": 213,
@@ -913,7 +913,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 213,
-        "sourceUnit": 2017,
+        "sourceUnit": 1200,
         "src": "57:29:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -925,7 +925,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 213,
-        "sourceUnit": 2045,
+        "sourceUnit": 1228,
         "src": "88:23:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1598,7 +1598,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-06-10T01:55:34.509Z",
+  "updatedAt": "2021-06-17T23:47:01.181Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
