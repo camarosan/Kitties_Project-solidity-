@@ -659,3 +659,16 @@ abi = [
     "payable": true
   }
   ]
+
+  /* you can put var abi = {
+    kittyContract:[
+
+    ], 
+    marketplace: [
+
+    ],
+
+    //in catalogue.js or Marketplace.js 
+    instance = new web3.eth.Contract(abi.kittyContract, contractAddress, {from: accounts[0]})
+    marketplaceInstance = new web3.eth.Contract(abi.marketplace, marketplaceAddress, {from: accounts[0]})
+  }*/

@@ -1,14 +1,18 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
-import "./IERC721.sol";
-import "./Ownable.sol";
-import "./IERC721Receiver.sol";
-//import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
+//import "./IERC721.sol";
+//import "./Ownable.sol";
+//import "./IERC721Receiver.sol";
+//import "./SafeMath.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+
 
 contract KittyContract is IERC721,Ownable {
     using SafeMath for uint256;
-
+    
     event Birth(
         address owner, 
         uint256 kittenId, 
@@ -35,13 +39,13 @@ contract KittyContract is IERC721,Ownable {
     }
     Kitty[] kitties;
 
-    function close() public onlyOwner { 
-        selfdestruct(owner);  
-    }
-
-    /*function supportsInterface(bytes4 _interfaceId) external view returns(bool){ // FOR ERC765
-        return (_interfaceId == _INTERFACE_ID_ERC721 || _interfaceId == _INTERFACE_ID_ERC165);
+    /*function close() public onlyOwner { 
+        selfdestruct Ownable;  
     }*/
+
+    function supportsInterface(bytes4 interfaceId) external view override  returns(bool){ // FOR ERC765
+        return interfaceId == type(IERC165).interfaceId;
+    }
 
     function breed(uint256 _dadId, uint256 _mumId) public  {
         require(_dadId < kitties.length &&_mumId < kitties.length);
@@ -64,15 +68,15 @@ contract KittyContract is IERC721,Ownable {
         return ownershipTokenCount[owner];
     }
 
-    function totalSupply() external view override returns (uint256 total) {
+    function totalSupply() external view  returns (uint256 total) {
         return kitties.length;
     }
 
-    function name() external pure override returns (string memory tokenName) {
+    function name() external pure  returns (string memory tokenName) {
         return tName;
     }
 
-    function symbol() external pure override returns (string memory tokenSymbol) {
+    function symbol() external pure  returns (string memory tokenSymbol) {
         return tSymbol;
     }
 
@@ -80,7 +84,7 @@ contract KittyContract is IERC721,Ownable {
         return ownershipTokenID[tokenId];
     }
 
-    function transfer(address to, uint256 tokenId) external override  payable {
+    function transfer(address to, uint256 tokenId) external  payable {
         require(to != address(0)); //`to` cannot be the zero address.
         require(to != address(this)); // to` can not be the contract address.
         require(_owns(msg.sender, tokenId));    // tokenId` token must be owned by `msg.sender`
@@ -160,7 +164,7 @@ contract KittyContract is IERC721,Ownable {
          return _operatorApprovals[_owner][_operator];
     }
 
-    function transferFrom(address _from, address _to, uint256 _tokenId) external payable override {
+    function transferFrom(address _from, address _to, uint256 _tokenId) external override {
         require(_to != address(0)); 
         //require(_to != address(this)); 
         require(_owns(msg.sender, _tokenId) || kittyIndexToApproved[_tokenId] == msg.sender || _operatorApprovals[_from][msg.sender] == true);
