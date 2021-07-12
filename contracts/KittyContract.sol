@@ -8,9 +8,10 @@ import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol
 import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/security/Pausable.sol";
 
 
-contract KittyContract is IERC721,Ownable {
+contract KittyContract is IERC721,Ownable, Pausable {
     using SafeMath for uint256;
     
     event Birth(
@@ -26,6 +27,7 @@ contract KittyContract is IERC721,Ownable {
     mapping (uint256 => address) private kittyIndexToApproved;
     mapping (address => mapping(address => bool)) private _operatorApprovals; 
 
+    
     string  constant  private tName = 'Carlos Kitty Token';
     string  constant private tSymbol = 'CKT';
     bytes4 internal constant MAGIC_ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)")); // from IERC721 interface
@@ -43,11 +45,19 @@ contract KittyContract is IERC721,Ownable {
         selfdestruct Ownable;  
     }*/
 
+    function pause() external  onlyOwner whenNotPaused {
+        _pause();
+    }
+
+    function unpause() external   onlyOwner whenPaused {
+        _unpause();
+    }
+
     function supportsInterface(bytes4 interfaceId) external view override  returns(bool){ // FOR ERC765
         return interfaceId == type(IERC165).interfaceId;
     }
 
-    function breed(uint256 _dadId, uint256 _mumId) public  {
+    function breed(uint256 _dadId, uint256 _mumId) public whenNotPaused  {
         require(_dadId < kitties.length &&_mumId < kitties.length);
         require(ownershipTokenID[_dadId]==  msg.sender && ownershipTokenID[_mumId]== msg.sender); // check ownership 
         uint256 dadDna = kitties[_dadId].genes; // you got the DNA 
@@ -64,11 +74,11 @@ contract KittyContract is IERC721,Ownable {
         _createKitty(_mumId, _dadId, newGen,newDna, msg.sender); // create a new cat with te new properties, give it to the msg.sender   
     }
 
-    function balanceOf(address owner) external view override returns (uint256 balance){
+    function balanceOf(address owner) external view override whenNotPaused returns (uint256 balance){
         return ownershipTokenCount[owner];
     }
 
-    function totalSupply() external view  returns (uint256 total) {
+    function totalSupply() external view whenNotPaused returns (uint256 total) {
         return kitties.length;
     }
 
@@ -80,11 +90,11 @@ contract KittyContract is IERC721,Ownable {
         return tSymbol;
     }
 
-    function ownerOf(uint256 tokenId) external view override returns (address owner) {
+    function ownerOf(uint256 tokenId) external view override whenNotPaused returns (address owner) {
         return ownershipTokenID[tokenId];
     }
 
-    function transfer(address to, uint256 tokenId) external  payable {
+    function transfer(address to, uint256 tokenId) external  payable whenNotPaused {
         require(to != address(0)); //`to` cannot be the zero address.
         require(to != address(this)); // to` can not be the contract address.
         require(_owns(msg.sender, tokenId));    // tokenId` token must be owned by `msg.sender`
@@ -127,44 +137,44 @@ contract KittyContract is IERC721,Ownable {
         return newKittenId;
     }
 
-    function createKittyGen0(uint256 genes) onlyOwner  public payable returns (uint256) { 
+    function createKittyGen0(uint256 genes) onlyOwner  public payable whenNotPaused returns (uint256) { 
         return _createKitty(0, 0, 0, genes, msg.sender);
     }
 
-    function getKitty(uint256 kittyId) public view returns(uint256, uint64, uint32, uint32, uint16){
+    function getKitty(uint256 kittyId) public view whenNotPaused returns(uint256, uint64, uint32, uint32, uint16){
              return (kitties[kittyId].genes, kitties[kittyId].birthTime, kitties[kittyId].mumId,
              kitties[kittyId].dadId, kitties[kittyId].generation); 
     }
 
-    function approve(address _approved, uint256 _tokenId) external override{
+    function approve(address _approved, uint256 _tokenId) external override whenNotPaused{
         require(_owns(msg.sender, _tokenId),"msg.sender is not the owner");
         kittyIndexToApproved[_tokenId] = _approved;
         emit Approval(msg.sender, _approved, _tokenId);
     }
 
-    function approve(address _approved, uint256 _tokenId, address from) external {
+    function approve(address _approved, uint256 _tokenId, address from) external whenNotPaused {
         require(_owns(from, _tokenId),"msg.sender is not the owner");
         kittyIndexToApproved[_tokenId] = _approved;
         emit Approval(msg.sender, _approved, _tokenId);
     }
     
-    function getApproved(uint256 _tokenId) external view override  returns (address) {
+    function getApproved(uint256 _tokenId) external view override whenNotPaused  returns (address) {
         require(ownershipTokenID[_tokenId]== msg.sender, "You are not the owner of the tokenId");
         require(_tokenId < kitties.length, "the tokenID does not exist");    
         return kittyIndexToApproved[_tokenId];
     }
     
-    function setApprovalForAll(address _operator, bool _approved) external override {
+    function setApprovalForAll(address _operator, bool _approved) external override whenNotPaused {
         require(_operator != msg.sender);
         _operatorApprovals[msg.sender][_operator] = _approved;
         emit ApprovalForAll(msg.sender, _operator,_approved);
     }
     
-    function isApprovedForAll(address _owner, address _operator) external view override returns (bool) {
+    function isApprovedForAll(address _owner, address _operator) external view override whenNotPaused returns (bool) {
          return _operatorApprovals[_owner][_operator];
     }
 
-    function transferFrom(address _from, address _to, uint256 _tokenId) external override {
+    function transferFrom(address _from, address _to, uint256 _tokenId) external override whenNotPaused {
         require(_to != address(0)); 
         //require(_to != address(this)); 
         require(_owns(msg.sender, _tokenId) || kittyIndexToApproved[_tokenId] == msg.sender || _operatorApprovals[_from][msg.sender] == true);
@@ -174,7 +184,7 @@ contract KittyContract is IERC721,Ownable {
         _transfer(_from,  _to,  _tokenId);
     }
 
-    function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata data) external override{
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata data) external override whenNotPaused{
         require(_owns(msg.sender, _tokenId) || kittyIndexToApproved[_tokenId] == msg.sender || _operatorApprovals[_from][msg.sender] == true);
         require(_owns(_from, _tokenId));
         require(_to != address(0));
@@ -182,7 +192,7 @@ contract KittyContract is IERC721,Ownable {
         _SafeTransferFrom(_from, _to, _tokenId, data);
     }
 
-    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external override{
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external override whenNotPaused{
         require(_owns(msg.sender, _tokenId) || kittyIndexToApproved[_tokenId] == msg.sender || _operatorApprovals[_from][msg.sender] == true);
         require(_owns(_from, _tokenId));
         require(_to != address(0));
