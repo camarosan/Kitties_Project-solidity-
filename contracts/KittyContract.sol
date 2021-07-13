@@ -1,9 +1,5 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
-//import "./IERC721.sol";
-//import "./Ownable.sol";
-//import "./IERC721Receiver.sol";
-//import "./SafeMath.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -41,10 +37,6 @@ contract KittyContract is IERC721,Ownable, Pausable {
     }
     Kitty[] kitties;
 
-    /*function close() public onlyOwner { 
-        selfdestruct Ownable;  
-    }*/
-
     function pause() external  onlyOwner whenNotPaused {
         _pause();
     }
@@ -53,7 +45,7 @@ contract KittyContract is IERC721,Ownable, Pausable {
         _unpause();
     }
 
-    function supportsInterface(bytes4 interfaceId) external view override  returns(bool){ // FOR ERC765
+    function supportsInterface(bytes4 interfaceId) external pure override  returns(bool){ // FOR ERC765
         return interfaceId == type(IERC165).interfaceId;
     }
 
@@ -222,10 +214,6 @@ contract KittyContract is IERC721,Ownable, Pausable {
     }
 
     function _mixDna(uint256 _dadDna, uint256 _mumDna) internal pure returns (uint256){
-       /* uint256 firstHalf = _dadDna / 100000000;
-        uint256 secondHalf = _mumDna % 100000000; 
-        uint256 newDna = firstHalf * 100000000;
-        newDna = newDna + secondHalf; */
         uint256 mod= 10000000000000000;
         uint256 div= 100000000000000;
         uint256 newDna= 0;

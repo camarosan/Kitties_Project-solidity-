@@ -21,11 +21,13 @@ $('#allKitties').click(()=>{
     contractInstance.methods.totalSupply().call().then((res)=>{
         tokenCount = parseInt(res);
         for(var i=0; i<tokenCount; i++){
-          kittiesDNA(i);
+          kittiesDNA(i)
           createCatBox(i, tokenCount,1); 
-        } 
+        }  
       })
-      setTimeout(renderKitties,2000,2);
+      setTimeout(renderKitties,2000);
+       
+     
 })
 
 $('#offerKitties').click(()=>{
@@ -39,7 +41,7 @@ $('#offerKitties').click(()=>{
        })
 })
 
-function kittiesDNA(i) { // from blokchain 
+ function kittiesDNA(i) { // from blokchain 
         contractInstance.methods.getKitty(i).call().then(function(res){
           var DNA = {
             "headcolor": res[0].slice(0,2),
@@ -60,6 +62,7 @@ function kittiesDNA(i) { // from blokchain
             };
             arrayDNA.push(DNA);   
         })  
+        
 }
 
 function createCatBox(id, count, htmlId){
@@ -184,7 +187,7 @@ catBoxFull = catBoxFull.concat(catBox);
     $(`#dnaspecial${arrayDNA[l].id}`).html(arrayDNA[l].lastNum)
   }
 
-    function renderKitties() {
+    async function renderKitties() {
     document.getElementById('1').innerHTML = catBoxFull; //  1 htmlId 
     for(var l=0; l<tokenCount; l++){ 
         render(l);
