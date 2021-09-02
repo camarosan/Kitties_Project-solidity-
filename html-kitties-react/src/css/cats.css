@@ -1,0 +1,212 @@
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+html {
+    box-sizing: border-box;
+    overflow-y: scroll;
+}
+body {
+    position: relative;
+ 
+}
+.head {
+    position: relative;
+    left: 51px;
+    width:222px;
+    height: 160px;
+    border-radius: 63px; 
+    border: 2px solid black;   
+}   
+.ears{
+    position: relative;
+}
+.rightear,.leftear{
+    position: absolute;
+    top: -40px;
+    width: 120px;
+    height: 120px;
+    border: 5px solid transparent;
+    border-radius: 90% 0 90% 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;   
+    border: 2px solid black;
+}
+.rightear{
+    transform: rotate(170deg);
+    left: 170px; 
+}
+.leftear{
+    transform: scale(-1, 1) rotate(170deg);
+    left: 32px;
+}
+.innerear{
+    width: 108px;
+    height: 108px;
+    border-radius: 90% 0 90% 0;
+    background: #e57373; 
+    border: 2px solid black;
+}
+
+.front {
+    position: absolute;
+    transform: translate(90%, 0%);
+    height: 50px;
+    width: 80px;
+    border-radius: 0 0 18px 46px;
+    background-color: black;
+}
+
+.nouse{
+    position: absolute;
+    width: 31px;
+    height: 20px;
+    background: black;
+    border-radius: 50%;
+    transform: translate(300%, 478%);
+}
+.eyes{
+    width: 200px;
+    height: 70px;
+    display: inline-flex;
+    position: absolute;
+    left: 40px;
+    top: 34px;
+}
+.eye, .eye2{
+    background-color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 100px;
+    border: 1px solid black;
+}
+.eye2{
+    margin-left: 23px;
+}
+.pupil{
+    width: 50px;
+    height: 50px;
+    border-radius: 100px;
+    transform: translate(9%, 9%);
+    border: 3px solid blue;
+}
+.intoeye{
+    background-color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 100px;
+    transform: translate(65%, -163%);
+}
+.mouth{
+    position: absolute;
+    background-color: black;
+    width: 55px;
+    height: 16px;
+    top: 124px;
+    left: 82px;
+    border-radius: 20px;
+}
+.tongue{
+    height: 10px;
+    width: 24px;
+    position: relative;
+    border-radius: 163px 150px 0 0;
+    background-color: lightpink;
+    left: 14px;
+    top: 5px;
+}
+.whiskergroup1, .whiskergroup2{
+    position:absolute;
+    top: 104px;
+    
+}
+.whiskergroup2{
+    left: 147px;
+}
+.whisker,.whisker2, .whisker3, .whisker4, .whisker5, .whisker6{
+    width: 70px;
+    height: 2px;
+    background-color: black;
+}
+
+.whisker2{
+    transform: rotate(-15deg);
+    margin-top: 7px;
+}
+.whisker3 {
+    transform: rotate(15deg);
+    margin-top: -20px;
+    
+}
+
+.whisker5{
+    transform: rotate(-15deg);
+    margin-top: -11px;
+}
+.whisker6{
+    transform: rotate(15deg);
+    margin-top: 16px;
+}
+
+.body {
+    width: 200px;
+    height: 133px;
+    margin-left: 74px;
+    border-top-right-radius: 69px;
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 45px;
+    border: 2px solid black;
+    position: relative;
+}
+.neck {
+    width: 110px;
+    height: 21px;
+    border-radius: 8px 8px 46px 46px;
+    background-color: black;
+    margin-left: 110px;
+    display: flex;
+    margin-block-start: -13px;
+}
+.tail {
+        position: absolute;
+        left: 220px;
+        height: 114px;
+        width: 114px;
+        border-radius: 362px 3px 306px 23px;
+        border: 2px solid black;
+        justify-content: center;
+        align-items: center;
+}
+.intotail{
+        height: 86px;
+        width: 87px;
+        border-radius: 127px 0px 124px 0px;
+        background-color: #e57373;
+        border: 2px solid black;
+}
+.legs {
+    width: 195px;
+    height: 50px;
+    display: inline-flex;
+    margin-top: -26px;
+}
+.leftleg, .rightleg{
+    background-color: black;
+    width: 46px;
+    height: 32px;
+    border-radius: 84px 84px 231px 231px;        
+}
+.leftleg{
+    margin-left: 83px;
+}
+.belly {
+    height: 130px;
+    width: 80px;
+    border-radius: 33px 40px 0px 0px;
+    background-color: blanchedalmond;
+    margin-left: 53px;
+    border: 2px solid black;
+}
+
