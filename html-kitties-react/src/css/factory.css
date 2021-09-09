@@ -27,8 +27,8 @@
 
 .dnaDiv {
     position: absolute;
-    
-    top: 400px;
+    left: 70px;
+    top: 380px;
 }
 .offerDiv {
     position: absolute;
@@ -38,4 +38,15 @@
 .marketDiv {
     position: absolute;
     left:26px;
+}
+
+.float-left{
+    float: left
+}
+
+.float-right{
+    float: right;
+}
+.float-center{
+    float: none;
 }

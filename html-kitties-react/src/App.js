@@ -1,86 +1,143 @@
 import './App.css';
 import React, {Component} from 'react'
-import Header from './Components/Header'
 import './css/cats.css'
 import './css/factory.css'
 import './css/colors.css'
+import './css/frontend.css'
+import './css/mystyle.css'
 import './bootstrap/css/bootstrap.min.css'
 import {allColors} from './js/colors.js';
 import { motion } from "framer-motion";
-
+import {TODO_LIST_ADDRESS, TODO_LIST_ABI} from './config'
+import Web3 from 'web3'
+import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
+//import {Catalogue} from './Components/Catalogue.jsx'
+//import {Marketplace} from './Components/Marketplace.jsx'
 
 class App extends Component {
   constructor(props){
     super(props)
     this.state = {
-      earsStyle : {},
-      headBodyStyle : {},
-      tailStyle: {},
-      eyestyle: {},
-      frontStyle: {},
-      pattern: {},
-      isAnimated: [] , 
-      hideColors: true,
-      hideAttributtes: false,
-      DNA: {}
+        account: {},
+        contractInstance:{},
+        count: '',
     }
     this.changeColorPattern = this.changeColorPattern.bind(this)
+    this.colorPattern = this.colorPattern.bind(this)
+    this.eyeDecorativePattern = this.eyeDecorativePattern.bind(this)
+    this.eyeDecorative = this.eyeDecorative.bind(this)
+    this.animation = this.animation.bind(this)
     this.changeAnimation = this.changeAnimation.bind(this)
     this.showHideColorsAttributes = this.showHideColorsAttributes.bind(this)
     this.showDefaultKitty = this.showDefaultKitty.bind(this)
+    this.defaultKitty = this.defaultKitty.bind(this)
     this.randomKitty = this.randomKitty.bind(this)
+    this.kittyColor = this.kittyColor.bind(this)
+    this.changeAnimation = this.changeAnimation.bind(this)
+    this.randomNumber = this.randomNumber.bind(this)
+    this.renderKitties = this.renderKitties.bind(this)
+    this.loadBlockchainData = this.loadBlockchainData.bind(this)
+    this.createKitty = this.createKitty.bind(this)
   }
 
-  componentDidMount() {
-    this.defaultKitty()
+    async componentDidMount() {
+      this.defaultKitty()
+      await this.loadBlockchainData()
+      await this.loadKitties()
   }
-  
+
   colors= Object.values(allColors())
+  kittyGen00= '00'
+  kitties = []
 
-  changeColorPattern = (e) => {
-    this.colorPattern(e.target.value, e.target.id)
+  loadKitties = async () =>{
+    let allKitties = await this.state.contractInstance.methods.totalSupply().call()
+    this.setState({count: allKitties})
+    for (let i=0; i<allKitties; i++){
+      let kitty = await this.state.contractInstance.methods.getKitty(i).call()
+      this.kitties.push(kitty)
+      this.renderKitties(i)
+    }
   }
 
-  colorPattern = (value, id) => {
-    console.log(typeof(value))
-    if(id=== 'tailColor'){
-      this.setState({
-        tailStyle: {...this.state.tailStyle, backgroundColor: this.colors[value]},
-        DNA: {...this.state.DNA, 'tailColor': value}
+  renderKitties =  (kittyID) =>{
+     this.colorPattern(String(this.kitties[kittyID][0].slice(0,2)), 'headColor', kittyID)
+     this.colorPattern(String(this.kitties[kittyID][0].slice(2,4)), 'tailColor', kittyID)
+     this.colorPattern(String(this.kitties[kittyID][0].slice(4,6)), 'eyeColor', kittyID)
+     this.colorPattern(String(this.kitties[kittyID][0].slice(6,8)), 'earColor', kittyID)
+     this.colorPattern(String(this.kitties[kittyID][0].slice(10,12)), 'patternDecorativeColor', kittyID) 
+    this.colorPattern(String(this.kitties[kittyID][0].slice(12,14)), 'patterncolor', kittyID)
+    this.eyeDecorative(String(this.kitties[kittyID][0].slice(8,9)), 'eyeDirection', kittyID)
+    this.eyeDecorative(String(this.kitties[kittyID][0].slice(9,10)), 'patternDecorative', kittyID)
+    this.animation(String(this.kitties[kittyID][0].slice(14,15)), 'animation', (kittyID))
+  }
+
+  async loadBlockchainData() {
+   await window.ethereum.enable()
+    const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545")
+    const accounts = await web3.eth.getAccounts()
+    this.setState({ account: accounts[0] })
+    const contractInstance = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
+    this.setState({contractInstance})
+  }
+
+  createKitty= async (e) =>{
+     e.preventDefault()
+     let DNA = this.state['headColor00']+this.state['tailColor00']+this.state['eyeColor00']
+     +this.state['earColor00']+this.state['eyeDirection00']+this.state['patternDecorative00']
+     +this.state['patternDecorativeColor00']+this.state['patterncolor00']+this.state['animation00']
+     await this.state.contractInstance.methods.createKittyGen0(Number(DNA)).send({from: this.state.account})
+  }
+
+  changeColorPattern = (kittyID, e) => {
+     this.colorPattern(e.target.value, e.target.id, kittyID)
+  }
+
+  colorPattern = (value, id, kittyID) => {
+      let style = this.kittyColor(id)+kittyID
+      id= String(id)+kittyID
+       this.setState({
+        [style]: {...this.state[style], backgroundColor: this.colors[value]},
+        [id] : value
       })
-    }
-    else if(id=== 'earColor') {
-      this.setState({
-        earsStyle: {...this.state.earsStyle, backgroundColor: this.colors[value]},
-        DNA: {...this.state.DNA, 'earColor': value}
-      })
-    }
-    else if(id=== 'headBodyColor') {
-      this.setState({
-        headBodyStyle: {...this.state.headBodyStyle, backgroundColor: this.colors[value]},
-        DNA: {...this.state.DNA, 'headColor': value}
-      })
-    }
-    else if(id=== 'eyeColor') {
-      this.setState({
-        eyestyle : {...this.state.eyestyle, backgroundColor: this.colors[value]},
-        DNA: {...this.state.DNA, 'eyeColor': value}
-      })
-    }
-    else if (id=== 'eyeshape') {
+  }
+
+  kittyColor = (id) => {
+    let style
+    if (id=== 'tailColor') {style = 'tailStyle'}
+    else if(id=== 'earColor') {style='earsStyle'}
+    else if(id=== 'headColor'){style='headBodyStyle'}
+    else if(id=== 'eyeColor') {style='eyestyle'}
+    else if(id === 'patternDecorativeColor' ) {style = 'frontStyle'}
+    else if(id === 'patterncolor' ) {style = 'pattern'}
+    else if(id === 'eyeDirection' ) {style = 'eyestyle'}
+    else if(id === 'patternDecorative' ) {style = 'frontStyle'}
+    return style
+  }
+
+  eyeDecorativePattern =  (kittyID, e) => {
+     this.eyeDecorative(e.target.value, e.target.id, kittyID)
+  }
+
+  eyeDecorative =   (value, id, kittyID) => {
+    if (id=== 'eyeDirection') {
       let translate; 
+      let style = this.kittyColor(id)+kittyID
+      id= String(id)+kittyID
       if(value==='1'){translate= 'translate(9%, 9%)'}
       else if(value === '2'){translate= 'translate(7%, 18%)'}
       else if(value==='3'){translate= 'translate(7%, 0%)'}
       else if(value==='4'){translate= 'translate(17%, 9%)'}
       else if(value==='5'){translate= 'translate(0%, 9%)'}
-     this.setState({
-      eyestyle : {...this.state.eyestyle, transform: translate},
-      DNA: {...this.state.DNA, 'eyeDirection': value}
+      this.setState({
+      [style] : {...this.state[style], transform: translate},
+      [id] : value
      })
     }
-    else if(id=== 'decorativepattern') {
+    else if(id=== 'patternDecorative') {
       let decorative;
+      let style = this.kittyColor(id)+kittyID
+      id= String(id)+kittyID
       if(value==='1'){decorative= {transform: 'translate(90%, 0%)',
       height: "50px",width: "80px",borderRadius: "0 0 18px 46px"}
       }
@@ -93,48 +150,24 @@ class App extends Component {
       else if(value==='4'){decorative= {transform: "translate(26%, 113%)",
       height: "73px",width: "146px",borderRadius: "100px 100px 58px 58px"}
       }
-      this.setState({
-        frontStyle : {...this.state.frontStyle,height : decorative['height'], 
+       this.setState({
+        [style] : {...this.state.frontStyle, height : decorative['height'], 
         width: decorative['width'], borderRadius:  decorative['borderRadius'], transform: decorative['transform'] },
-        DNA: {...this.state.DNA, 'patternDecorative': value}
-      })
-    }
-    else if (id=== 'patterncolor') {
-      this.setState({
-        frontStyle: {...this.state.frontStyle, backgroundColor: this.colors[value]},
-        DNA: {...this.state.DNA, 'patternDecorativeColor': value}
-      })
-    }
-    else if (id=== 'pattern2color') {
-      this.setState({
-        pattern: {...this.state.pattern, backgroundColor: this.colors[value] },
-        DNA: {...this.state.DNA, 'patterncolor': value}
+        [id]: value
       })
     }
   }
 
-  changeAnimation =  (e) =>{
-    let value = e.target.value
-    this.animation(value)
+  changeAnimation =  (kittyID, e) =>{
+     this.animation(e.target.value, e.target.id, kittyID)
   }
 
-  animation = (value) => {
-    let animationValue;
-    let temp_isAnimated = this.state.isAnimated.map((boolean)=>{
-      return boolean = false
-    })
-    let temp_element= { ...temp_isAnimated[value]};
-    temp_element = true
-    temp_isAnimated[value] = temp_element
-
-    if (temp_isAnimated[0]) {animationValue = 0}
-    else if  (temp_isAnimated[1]) {animationValue = 1}
-    else if  (temp_isAnimated[2]) {animationValue = 2}
-    else {animationValue=3}
-
-    this.setState({
-      isAnimated:  temp_isAnimated,
-      DNA : {...this.state.DNA, 'animation': animationValue}
+  animation =  (value,id, kittyID) => {
+    id= String(id)+kittyID
+    let style = 'isAnimated'+ kittyID
+     this.setState({
+      [style]:  value,
+      [id]: value
      })
   }
    
@@ -156,49 +189,47 @@ class App extends Component {
     this.defaultKitty();
   } 
 
-  defaultKitty=()=> { 
-    this.setState({
-      earsStyle : {backgroundColor: '#4c858b'},
-      headBodyStyle : {backgroundColor: '#4c858b'},
-      tailStyle: {backgroundColor: '#4c858b'},
-      eyestyle: {backgroundColor: '#4a3c95'},
-      frontStyle: {'transform': 'translate(90%, 0%)',
+  defaultKitty=  ()=> { 
+     this.setState({
+      earsStyle00 : {backgroundColor: '#4c858b'},
+      headBodyStyle00 : {backgroundColor: '#4c858b'},
+      tailStyle00: {backgroundColor: '#4c858b'},
+      eyestyle00: {backgroundColor: '#4a3c95'},
+      frontStyle00: {'transform': 'translate(90%, 0%)',
       "height": "50px",
       "width": "80px",
       "borderRadius": "0 0 18px 46px",
       "backgroundColor": '#344867'},
-      pattern: {backgroundColor: '#482916'},
-      isAnimated: [true,false,false,false] , 
+      pattern00: {backgroundColor: '#482916'},
+      isAnimated00: '1',
       hideColors: true,
       hideAttributtes: false,
-      DNA: {
-        'headColor' : 14,
-        'tailColor' : 14,
-        'eyeColor'  : 20,
-        'earColor'  : 14,
-        'eyeDirection' : 1,
-        'patternDecorative' : 1,
-        'patterncolor' : 21,
-        'patternDecorativeColor' :98,
-        'animation' : 0
-      }
+        'headColor00' : 14,
+        'tailColor00' : 14,
+        'eyeColor00'  : 20,
+        'earColor00'  : 14,
+        'eyeDirection00' : 1,
+        'patternDecorative00' : 1,
+        'patternDecorativeColor00' :98,
+        'patterncolor00' : 21,
+        'animation00' : 1
     })     
   }
   
   randomKitty = async (e) => { 
     e.preventDefault()
     let randomValue;
-    let colors = ['headBodyColor','tailColor','eyeColor','earColor', 'patterncolor', 'pattern2color']
+    let colors = ['headColor','tailColor','eyeColor','earColor', 'patterncolor', 'patternDecorativeColor']
     for await (let color of  colors ) {
       randomValue =this.randomNumber()
-      this.colorPattern(String(randomValue), color)
+      this.colorPattern(String(randomValue), color, this.kittyGen00) //00 the default kitty
     }
     randomValue =  Math.floor(Math.random()*10)%5+1 // 5 options to choose 1-5
-    await this.colorPattern(String(randomValue), 'eyeshape')
+    this.eyeDecorative(String(randomValue), 'eyeDirection',this.kittyGen00)
     randomValue = Math.floor(Math.random()*10)%4+1 // 4 options to choose 1-4
-    await this.colorPattern(String(randomValue), 'decorativepattern')
-    randomValue = Math.floor(Math.random()*10)%4 // 3 options including 0  -3
-    await this.animation(randomValue)
+    this.eyeDecorative(String(randomValue), 'patternDecorative', this.kittyGen00)
+    randomValue = Math.floor(Math.random()*10)%4+1 // 3 options including 1  -4
+    this.animation(String(randomValue), "animation",this.kittyGen00)
   }
 
    randomNumber =()=>{ //from 10 to 98
@@ -209,159 +240,188 @@ class App extends Component {
       return random 
   }
 
-
+  
+    
   render(){   
-    let headAnimation = this.state.isAnimated[0] ? [10,0,-10,0,10] : [0,0]
-    let earsAnimation = this.state.isAnimated[1] ? [-6,0,-6,0,6,0,-6] : [0,0]
-    let tailAnimation = this.state.isAnimated[2] ? [45, 0, -45] : [0,0]
-    let legsAnimation = this.state.isAnimated[3] ? [10,0,-10,0,10] : [0,0]
+    
+  let kitty= (kittyID) =>  { 
+    return(
+    <div className="col-lg-4 catBox light-b-shadow " >
+    <div className='cat' id={`cat${kittyID}`}>
+      <motion.div className= 'ears'  id= {`ears${kittyID}`}
+          animate={{ skewX: [...this.state[`isAnimated${kittyID}`]=== '2' ? [-6,0,-6,0,6,0,-6] : [0,0]]}}
+         transition={{delay:0, duration: 5, repeat: Infinity }}
+        >   
+            <div className= 'rightear' id= {`rightear${kittyID}`} style={this.state[`earsStyle${kittyID}`]}>
+            <div className = 'innerear' id={`innerear${kittyID}`} ></div>
+            </div>
+            <div className= 'leftear' id= {`leftear${kittyID}`} style={this.state[`earsStyle${kittyID}`]}>
+            <div className = 'innerear' id={`innerear${kittyID}`} ></div>
+            </div>
+        </motion.div>
+        <motion.div className= 'head' id={`head${kittyID}`} style= {this.state[`headBodyStyle${kittyID}`]}
+          animate={{rotate : [...this.state[`isAnimated${kittyID}`]=== '1' ? [10,0,-10,0,10] : [0,0]] }}
+          transition={{delay:0, duration: 5, repeat:Infinity}}
+        >   
+          <div className= 'front' id={`front${kittyID}`} style = {this.state[`frontStyle${kittyID}`]}></div>
+            <div className= 'nouse' id={`nouse${kittyID}`}></div>
+            <div className= 'eyes' id={`eyes${kittyID}`} >
+            <div className = 'eye' id={`eye${kittyID}`}>
+              <div className = 'pupil' id={`pupil${kittyID}`}  style={this.state[`eyestyle${kittyID}`]} ></div>
+              <div className= 'intoeye' id={`intoeye${kittyID}`}></div>
+            </div>
+              <div className = 'eye2' id= {`eye2${kittyID}`}>
+                <div className = 'pupil' id={`pupil${kittyID}`} style={this.state[`eyestyle${kittyID}`]}></div>
+                <div className= 'intoeye' id={`intoeye${kittyID}`} ></div>
+              </div>
+          </div>
+          <div className= 'mouth' id={`mouth${kittyID}`}>
+            <div className= 'tongue' id={`tongue${kittyID}`}></div>
+          </div>  
+          <div className ='whiskergroup-1-' id= {`whiskergroup-1-${kittyID}`}>
+            <div className= 'whisker-1-' id={`whisker-1-${kittyID}`}></div>
+            <div className= 'whisker-2-' id={`whisker-2-${kittyID}`}></div>
+            <div className= 'whisker-3-' id={`whisker-3-${kittyID}`}></div>
+          </div>
+          <div className ='whiskergroup-2-' id={`whiskergroup-2${kittyID}`}>
+            <div className= 'whisker-4-' id={`whisker-4-${kittyID}`}></div>
+            <div className= 'whisker-5-' id={`whisker-5-${kittyID}`}></div>
+            <div className= 'whisker-6-' id={`whisker-6-${kittyID}`} ></div>
+          </div>
+        </motion.div>
+        <motion.div className='tail' id={`tail${kittyID}`} style={this.state[`tailStyle${kittyID}`]}
+          animate={{rotateX: [...this.state[`isAnimated${kittyID}`]=== '3' ? [45, 0, -45] : [0,0] ]}}
+          transition={{delay:0, duration: 5, repeat:Infinity}}
+        >
+          <div className= 'intotail' id={`intotail${kittyID}`} ></div>
+        </motion.div>
+        <div className = 'neck' id={`neck${kittyID}`} style= {this.state[`pattern${kittyID}`]}></div>
+        <div className= 'body' id={`body${kittyID}`} style= {this.state[`headBodyStyle${kittyID}`]}>                           
+          <div className = 'belly' id={`belly${kittyID}`}> </div>
+              <motion.div 
+                className="legs" id={`legs${kittyID}`}
+                animate={{rotate : [...this.state[`isAnimated${kittyID}`]=== '4' ? [10,0,-10,0,10] : [0,0]] }}
+                transition={{delay:0, duration: 5, repeat:Infinity}}
+                >
+                <div className = 'rightleg' id={`rightleg${kittyID}`} style= {this.state[`pattern${kittyID}`]}></div>
+                <div className = 'leftleg' id={`leftleg${kittyID}`} style= {this.state[`pattern${kittyID}`]}></div>
+              </motion.div>
+        </div> 
+        <div className="dnaDiv" id="catDNA">
+          DNA:
+          <b>
+            <span id={`dnahead${kittyID}`}>{this.state[`headColor${kittyID}`]}</span>
+            <span id={`dnatail${kittyID}`}>{this.state[`tailColor${kittyID}`]}</span>
+            <span id={`dnaeyes${kittyID}`}>{this.state[`eyeColor${kittyID}`]}</span>
+            <span id={`dnaears${kittyID}`}>{this.state[`earColor${kittyID}`]}</span>
+            <span id={`dnaeyeorientation${kittyID}`}>{this.state[`eyeDirection${kittyID}`]}</span>
+            <span id={`dnadecoration${kittyID}`}>{this.state[`patternDecorative${kittyID}`]}</span>
+            <span id={`dnadecorationMid${kittyID}`}>{this.state[`patternDecorativeColor${kittyID}`]}</span>
+            <span id={`dnadecorationSides${kittyID}`}>{this.state[`patterncolor${kittyID}`]}</span>
+            <span id={`dnaanimation${kittyID}`}>{this.state[`animation${kittyID}`]}</span>
+            <span id="dnaspecial00"></span>
+          </b>
+        </div>   
+        
+      </div>
+    </div>
+     )}
+
+    const renderCatalogue = () => { 
+      let render = []
+     for(let i=0; i<this.state.count; i++) {
+      render.push( <div>{kitty(String(i))}</div>)
+      } 
+      return render
+    }
 
     return (
       <div className="App">
-       <Header></Header> 
-        <div className="container p-5"   id= 'Kitties-Factory'>
-                  <h1>Kitties-Factory</h1>
-                  <p>Create your custom Kitty</p>
-                    <div className="col-lg-4 catBox light-b-shadow " >
-                      <div className='cat' id='cat00'>
-                        <motion.div className= 'ears'  id= 'ears00'
-                         animate={{ skewX: [...earsAnimation]}}
-                         transition={{delay:0, duration: 5, repeat: Infinity }}
-                        >
-                            <div className= 'rightear' id= 'rightear00' style={this.state.earsStyle}>
-                                <div className = 'innerear' id='innerear00' ></div>
-                            </div>
-                            <div className= 'leftear' id= 'leftear00' style={this.state.earsStyle}>
-                                <div className= 'innerear' id ='innerear00'></div>
-                            </div>
-                        </motion.div>
-                        <motion.div className= 'head' id='head00' style= {this.state.headBodyStyle}
-                          animate={{rotate : [...headAnimation] }}
-                          transition={{delay:0, duration: 5, repeat:Infinity}}
-                        >   
-                          <div className= 'front' id='front00' style = {this.state.frontStyle}></div>
-                            <div className= 'nouse' id='nouse00'></div>
-                            <div className= 'eyes' id='eyes00' >
-                              <div className = 'eye' id='eye00'>
-                              <div className = 'pupil' id='pupil00' style={this.state.eyestyle} ></div>
-                              <div className= 'intoeye' id='intoeye00' ></div>
-                            </div>
-                              <div className = 'eye2' id= 'eye200'>
-                              <div className = 'pupil' id='pupil00' style={this.state.eyestyle}></div>
-                              <div className= 'intoeye' id='intoeye00'></div>
-                            </div>
-                          </div>
-                          <div className= 'mouth' id='mouth00'>
-                            <div className= 'tongue' id='tongue00'></div>
-                          </div>  
-                          <div className ='whiskergroup1' id='whiskergroup100'>
-                            <div className= 'whisker' id='whisker00'></div>
-                            <div className= 'whisker2' id='whisker200' ></div>
-                            <div className= 'whisker3' id='whisker300'></div>
-                          </div>
-                          <div className ='whiskergroup2' id='whiskergroup200'>
-                            <div className= 'whisker4' id='whisker400'></div>
-                            <div className= 'whisker5' id='whisker500'></div>
-                            <div className= 'whisker6' id='whisker600' ></div>
-                          </div>
-                        </motion.div>
-                        <motion.div className='tail' id='tail00' style={this.state.tailStyle}
-                          animate={{rotateX: [...tailAnimation ]}}
-                          transition={{delay:0, duration: 5, repeat:Infinity}}
-                        >
-                          <div className= 'intotail' id='intotail00' ></div>
-                        </motion.div>
-                        <div className = 'neck' id='neck00' style= {this.state.pattern}></div>
-                        <div className= 'body' id='body00' style= {this.state.headBodyStyle}>                           
-                            <div className = 'belly' id='belly00'> </div>
-                              <motion.div 
-                                className="legs" id='legs00'
-                                animate={{rotate : [...legsAnimation] }}
-                                transition={{delay:0, duration: 5, repeat:Infinity}}
-                                >
-                                <div className = 'rightleg' id='rightleg00' style= {this.state.pattern}></div>
-                                <div className = 'leftleg' id='leftleg00'style= {this.state.pattern}></div>
-                              </motion.div>
-                        </div> 
-                        <div className="dnaDiv" id="catDNA">
-                          DNA:
-                          <b>
-                            {/*Colors*/}
-                            <span id="dnahead00">{this.state.DNA['headColor']}</span>
-                            <span id="dnatail00">{this.state.DNA['tailColor']}</span>
-                            <span id="dnaeyes00">{this.state.DNA['eyeColor']}</span>
-                            <span id="dnaears00">{this.state.DNA['earColor']}</span>
-                            {/*Attributtes*/}
-                            <span id="dnaeyeorientation00">{this.state.DNA['eyeDirection']}</span>
-                            <span id="dnadecoration00">{this.state.DNA['patternDecorative']}</span>
-                            <span id="dnadecorationMid00">{this.state.DNA['patternDecorativeColor']}</span>
-                            <span id="dnadecorationSides00">{this.state.DNA['patterncolor']}</span>
-                            <span id="dnaanimation00">{this.state.DNA['animation']}</span>
-                            <span id="dnaspecial00"></span>
-                          </b>
-                        </div>   
-                        
-                      </div>
-                    </div>
+        <Router>
+          <div className="light-b-shadow"  align = "center">
+            <p className="bg-white pt-0">Academy-kitties
+            <Link to="/" ><button className ='red-btn'>Factory</button></Link>
+            <Link to="/catalogue"><button className ='red-btn'>Catalogue</button></Link>
+            <Link to= "/marketplace"><button className ='red-btn'>Marketplace</button>  </Link>
+            </p>
+          </div>
+          <Switch>
+            <Route exact path="/">
+                <div className="container p-1"   id= 'Kitties-Factory'>
+                  <h1>Kitties-Factory</h1>  
+                  <p>Create your custom Kitty - Number of Kitties {this.state.count}</p>
+                    {kitty('00')}
                     <div className="col-lg-7 cattributes m-2 light-b-shadow">
                           <div>
                             <button className="white-btn" id= "hideColors" onClick={this.showHideColorsAttributes}>Colors</button>
                             <button className="white-btn" id= "hideAttributtes"onClick={this.showHideColorsAttributes}>Attributes</button>
-                            <button className = 'white-btn' >Create your Kitty</button>
+                            <button className = 'white-btn' onClick= {this.createKitty} >Create your Kitty</button>
                             <button className="white-btn" id='defaultCat' onClick= {this.showDefaultKitty}>Default Kitty </button>
                             <button className="white-btn" id='randomCat' onClick= {this.randomKitty}>Random Kitty</button>
                           </div> 
-                      {this.state.hideColors ?
+                      {this.state.hideColors ? // to hide colors
                       <div id="catColors" >
                         <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Head and body</b><span className="badge badge-dark ml-2" id="headcode" >{this.state.DNA['headColor']}</span></label>
-                          <input type="range" min="10" max="98" className="form-control-range" id="headBodyColor"  onChange ={this.changeColorPattern} value= {this.state.DNA['headColor']}></input>
+                          <label htmlFor="formControlRange"><b>Head and body</b><span className="badge badge-dark ml-2" id="headcode" >{this.state['headColor00']}</span></label>
+                          <input type="range" min="10" max="98" className="form-control-range" id="headColor"  onChange ={(e)=> this.changeColorPattern(this.kittyGen00,e)} value= {this.state['headColor00']}></input>
                         </div> 
                         <div className="form-group">  
-                          <label htmlFor="formControlRange"><b>Tail</b><span className="badge badge-dark ml-2" id="tailcode">{this.state.DNA['tailColor']}</span></label>
-                          <input type="range" min="10" max="98" className="form-control-range" id="tailColor" onChange ={this.changeColorPattern} value={this.state.DNA['tailColor']} />
+                          <label htmlFor="formControlRange"><b>Tail</b><span className="badge badge-dark ml-2" id="tailcode">{this.state['tailColor00']}</span></label>
+                          <input type="range" min="10" max="98" className="form-control-range" id="tailColor" onChange ={(e)=> this.changeColorPattern(this.kittyGen00,e)} value={this.state['tailColor00']} />
                         </div>  
                         <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Eye</b><span className="badge badge-dark ml-2" id="eyecode">{this.state.DNA['eyeColor']}</span></label>
-                          <input type="range" min="10" max="98" className="form-control-range" id="eyeColor" onChange ={this.changeColorPattern} value= {this.state.DNA['eyeColor']}/>
+                          <label htmlFor="formControlRange"><b>Eye</b><span className="badge badge-dark ml-2" id="eyecode">{this.state['eyeColor']}</span></label>
+                          <input type="range" min="10" max="98" className="form-control-range" id="eyeColor" onChange ={(e)=> this.changeColorPattern(this.kittyGen00,e)} value= {this.state['eyeColor00']}/>
                         </div>
                         <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Ear</b><span className="badge badge-dark ml-2" id="earcode">{this.state.DNA['earColor']}</span></label>
-                          <input type="range" min="10" max="98" className="form-control-range" id="earColor"  onChange ={this.changeColorPattern} value= {this.state.DNA['earColor']}/>
+                          <label htmlFor="formControlRange"><b>Ear</b><span className="badge badge-dark ml-2" id="earcode">{this.state['earColor00']}</span></label>
+                          <input type="range" min="10" max="98" className="form-control-range" id="earColor"  onChange ={(e)=> this.changeColorPattern(this.kittyGen00,e)} value= {this.state['earColor00']}/>
                         </div>
                       </div>: null
                       }
-                      {this.state.hideAttributtes ?
+                      {this.state.hideAttributtes ? // to hide Attributtes
                       <div id="catAttributes" >
-                        <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Eye Orientation</b><span className="badge badge-dark ml-2" id="eyeshapecode">{this.state.DNA['eyeDirection']}</span></label>
-                          <input type="range" min="1" max="5" className="form-control-range" id="eyeshape" onChange= {this.changeColorPattern} value= {this.state.DNA['eyeDirection']}/>
+                        <div className="form-group float-left" >
+                          <label htmlFor="formControlRange"><b>Eye Orientation</b><span className="badge badge-dark ml-2" id="eyeshapecode">{this.state['eyeDirection00']}</span></label>
+                          <input type="range" min="1" max="5" className="form-control-range" id="eyeDirection" onChange= {(e)=>this.eyeDecorativePattern(this.kittyGen00,e)} value= {this.state['eyeDirection00']}/>
+                        </div>
+                        <div className="form-group float-left">
+                          <label htmlFor="formControlRange"><b>Decorative Pattern</b><span className="badge badge-dark ml-2" id="decorativecode">{this.state['patternDecorative00']}</span></label>
+                          <input type="range" min="1" max="4" className="form-control-range" id="patternDecorative" onChange= {(e)=>this.eyeDecorativePattern(this.kittyGen00,e)} value={this.state['patternDecorative00']}/>
+                        </div>
+                        <div className="form-group float-left">
+                          <label htmlFor="formControlRange"><b>Animation</b><span className="badge badge-dark ml-2" id="animationcode">{this.state['animation00']}</span></label>
+                          <input type="range" min="1" max="4" className="form-control-range" id="animation" onChange={(e)=>this.changeAnimation(this.kittyGen00,e)} 
+                            value={this.state['animation00']}/>
+                        </div>
+                        <div className="form-group float-left">
+                          <label htmlFor="formControlRange"><b>Sex</b><span className="badge badge-dark ml-2" id="sexcode"></span></label>
+                          <input type="range" min="0" max="1" className="form-control-range" id="sex"/>
                         </div>
                         <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Decorative Pattern</b><span className="badge badge-dark ml-2" id="decorativecode">{this.state.DNA['patternDecorative']}</span></label>
-                          <input type="range" min="1" max="4" className="form-control-range" id="decorativepattern" onChange= {this.changeColorPattern} value={this.state.DNA['patternDecorative']}/>
+                          <label htmlFor="formControlRange"><b>Pattern Color</b><span className="badge badge-dark ml-2" id="patterncolorcode">{this.state['patternDecorativeColor00']}</span></label>
+                          <input type="range" min="10" max="98" className="form-control-range" id="patternDecorativeColor" onChange = {(e)=>this.changeColorPattern(this.kittyGen00,e)} value={this.state['patternDecorativeColor00']}/>
                         </div>
                         <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Pattern Color</b><span className="badge badge-dark ml-2" id="patterncolorcode">{this.state.DNA['patternDecorativeColor']}</span></label>
-                          <input type="range" min="10" max="98" className="form-control-range" id="patterncolor" onChange = {this.changeColorPattern} value={this.state.DNA['patternDecorativeColor']}/>
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Pattern2 Color</b><span className="badge badge-dark ml-2" id="pattern2colorcode">{this.state.DNA['patterncolor']}</span></label>
-                          <input type="range" min="10" max="98" className="form-control-range" id="pattern2color" onChange = {this.changeColorPattern} value={this.state.DNA['patterncolor']}/>
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Animation</b><span className="badge badge-dark ml-2" id="animationcode">{this.state.DNA['animation']}</span></label>
-                          <input type="range" min="0" max="3" className="form-control-range" id="animation" onChange={this.changeAnimation} 
-                            value={this.state.DNA['animation']}/>
+                          <label htmlFor="formControlRange"><b>Pattern2 Color</b><span className="badge badge-dark ml-2" id="pattern2colorcode">{this.state['patterncolor00']}</span></label>
+                          <input type="range" min="10" max="98" className="form-control-range" id="patterncolor" onChange = {(e)=>this.changeColorPattern(this.kittyGen00,e)} value={this.state['patterncolor00']}/>
                         </div>
                       </div>: null
                       }
-                    </div>
-                    
-                  
-        </div>
-
-        
+                    </div>       
+                </div>
+            </Route>
+            <Route path="/catalogue">
+             
+                {renderCatalogue()}
+              
+                
+            </Route>
+            <Route path="/marketplace">
+            
+            </Route>
+          </Switch>
+        </Router>
       </div>
     );
   }

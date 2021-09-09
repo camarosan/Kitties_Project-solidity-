@@ -117,35 +117,35 @@ body {
     left: 14px;
     top: 5px;
 }
-.whiskergroup1, .whiskergroup2{
+.whiskergroup-1-, .whiskergroup-2-{
     position:absolute;
     top: 104px;
     
 }
-.whiskergroup2{
+.whiskergroup-2-{
     left: 147px;
 }
-.whisker,.whisker2, .whisker3, .whisker4, .whisker5, .whisker6{
+.whisker-1-,.whisker-2-, .whisker-3-, .whisker-4-, .whisker-5-, .whisker-6-{
     width: 70px;
     height: 2px;
     background-color: black;
 }
 
-.whisker2{
+.whisker-2-{
     transform: rotate(-15deg);
     margin-top: 7px;
 }
-.whisker3 {
+.whisker-3-{
     transform: rotate(15deg);
     margin-top: -20px;
     
 }
 
-.whisker5{
+.whisker-5-{
     transform: rotate(-15deg);
     margin-top: -11px;
 }
-.whisker6{
+.whisker-6-{
     transform: rotate(15deg);
     margin-top: 16px;
 }
