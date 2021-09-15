@@ -8,7 +8,7 @@ import './css/mystyle.css'
 import './bootstrap/css/bootstrap.min.css'
 import {allColors} from './js/colors.js';
 import { motion } from "framer-motion";
-import {TODO_LIST_ADDRESS, TODO_LIST_ABI} from './config'
+import {KITTYCONTRACT_ADDRESS, MARKETPLACE_ADDRESS,TODO_LIST_ABI} from './config'
 import Web3 from 'web3'
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 //import {Catalogue} from './Components/Catalogue.jsx'
@@ -20,24 +20,18 @@ class App extends Component {
     this.state = {
         account: {},
         contractInstance:{},
-        count: '',
+        count: '0',
+        momID: '',
+        dadID: '',
+        generation: '',
+        ownerKittyAddress: '0',
+        sale: [],
+        kitties: [],
+        breedKitties: [],
     }
-    this.changeColorPattern = this.changeColorPattern.bind(this)
-    this.colorPattern = this.colorPattern.bind(this)
-    this.eyeDecorativePattern = this.eyeDecorativePattern.bind(this)
-    this.eyeDecorative = this.eyeDecorative.bind(this)
-    this.animation = this.animation.bind(this)
-    this.changeAnimation = this.changeAnimation.bind(this)
     this.showHideColorsAttributes = this.showHideColorsAttributes.bind(this)
     this.showDefaultKitty = this.showDefaultKitty.bind(this)
-    this.defaultKitty = this.defaultKitty.bind(this)
-    this.randomKitty = this.randomKitty.bind(this)
-    this.kittyColor = this.kittyColor.bind(this)
-    this.changeAnimation = this.changeAnimation.bind(this)
-    this.randomNumber = this.randomNumber.bind(this)
-    this.renderKitties = this.renderKitties.bind(this)
     this.loadBlockchainData = this.loadBlockchainData.bind(this)
-    this.createKitty = this.createKitty.bind(this)
   }
 
     async componentDidMount() {
@@ -48,37 +42,44 @@ class App extends Component {
 
   colors= Object.values(allColors())
   kittyGen00= '00'
-  kitties = []
-
+  
   loadKitties = async () =>{
     let allKitties = await this.state.contractInstance.methods.totalSupply().call()
+    this.state.sale = await this.state.MarketplaceInstance.methods.getAllTokenOnSale().call()
     this.setState({count: allKitties})
+    this.state.kitties.splice(0, this.state.kitties.length)
     for (let i=0; i<allKitties; i++){
       let kitty = await this.state.contractInstance.methods.getKitty(i).call()
-      this.kitties.push(kitty)
+      this.setState({[`blockchainOffer${i}`]: '' }) 
+      this.state.kitties.push(kitty)
       this.renderKitties(i)
     }
   }
 
   renderKitties =  (kittyID) =>{
-     this.colorPattern(String(this.kitties[kittyID][0].slice(0,2)), 'headColor', kittyID)
-     this.colorPattern(String(this.kitties[kittyID][0].slice(2,4)), 'tailColor', kittyID)
-     this.colorPattern(String(this.kitties[kittyID][0].slice(4,6)), 'eyeColor', kittyID)
-     this.colorPattern(String(this.kitties[kittyID][0].slice(6,8)), 'earColor', kittyID)
-     this.colorPattern(String(this.kitties[kittyID][0].slice(10,12)), 'patternDecorativeColor', kittyID) 
-    this.colorPattern(String(this.kitties[kittyID][0].slice(12,14)), 'patterncolor', kittyID)
-    this.eyeDecorative(String(this.kitties[kittyID][0].slice(8,9)), 'eyeDirection', kittyID)
-    this.eyeDecorative(String(this.kitties[kittyID][0].slice(9,10)), 'patternDecorative', kittyID)
-    this.animation(String(this.kitties[kittyID][0].slice(14,15)), 'animation', (kittyID))
+     this.colorPattern(String(this.state.kitties[kittyID][0].slice(0,2)), 'headColor', kittyID)
+     this.colorPattern(String(this.state.kitties[kittyID][0].slice(2,4)), 'tailColor', kittyID)
+     this.colorPattern(String(this.state.kitties[kittyID][0].slice(4,6)), 'eyeColor', kittyID)
+     this.colorPattern(String(this.state.kitties[kittyID][0].slice(6,8)), 'earColor', kittyID)
+     this.colorPattern(String(this.state.kitties[kittyID][0].slice(10,12)), 'patternDecorativeColor', kittyID) 
+    this.colorPattern(String(this.state.kitties[kittyID][0].slice(12,14)), 'patterncolor', kittyID)
+    this.eyeDecorative(String(this.state.kitties[kittyID][0].slice(8,9)), 'eyeDirection', kittyID)
+    this.eyeDecorative(String(this.state.kitties[kittyID][0].slice(9,10)), 'patternDecorative', kittyID)
+    this.animation(String(this.state.kitties[kittyID][0].slice(14,15)), 'animation', (kittyID))
+    this.statistics(this.state.kitties[kittyID][1], 'birthTime', kittyID)
+    this.statistics(this.state.kitties[kittyID][2], 'mumId', kittyID)
+    this.statistics(this.state.kitties[kittyID][3], 'dadId', kittyID)
+    this.statistics(this.state.kitties[kittyID][4], 'generation', kittyID)
   }
 
   async loadBlockchainData() {
-   await window.ethereum.enable()
+    await window.ethereum.enable()
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545")
     const accounts = await web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
-    const contractInstance = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
-    this.setState({contractInstance})
+    const contractInstance = new web3.eth.Contract(TODO_LIST_ABI.kittyContract_ABI, KITTYCONTRACT_ADDRESS );
+    const MarketplaceInstance =   new web3.eth.Contract(TODO_LIST_ABI.Marketplace_ABI, MARKETPLACE_ADDRESS)
+    this.setState({contractInstance, MarketplaceInstance})
   }
 
   createKitty= async (e) =>{
@@ -87,6 +88,9 @@ class App extends Component {
      +this.state['earColor00']+this.state['eyeDirection00']+this.state['patternDecorative00']
      +this.state['patternDecorativeColor00']+this.state['patterncolor00']+this.state['animation00']
      await this.state.contractInstance.methods.createKittyGen0(Number(DNA)).send({from: this.state.account})
+     //let allKitties = await this.state.contractInstance.methods.totalSupply().call()
+     //this.setState({count: allKitties})
+     await this.loadKitties()
   }
 
   changeColorPattern = (kittyID, e) => {
@@ -170,6 +174,13 @@ class App extends Component {
       [id]: value
      })
   }
+
+  statistics = (value,id, kittyID) => {
+    id= String(id)+kittyID
+      this.setState({
+        [id]: value
+      })
+  }
    
   showHideColorsAttributes(e)  {
      e.preventDefault() 
@@ -240,14 +251,150 @@ class App extends Component {
       return random 
   }
 
+  breed = (e) => {
+    let id = e.target.id
+    if (this.state.breedKitties.includes(id)){
+      this.state.breedKitties.splice(this.state.breedKitties.indexOf(id),1)
+    }
+    else {
+    this.state.breedKitties.push(id)
+    }
+  }
   
+  breedblokchain = async () =>{
+    if(this.state.breedKitties.length === 2) {
+      let kitty1 = this.state.breedKitties[0].slice(10)
+      let kitty2 = this.state.breedKitties[1].slice(10)
     
+      await this.state.contractInstance.methods.breed(kitty1, kitty2).send({from: this.state.account})
+      .then(( event)=>{
+          console.log(event)   
+      }); 
+       
+      this.state.breedKitties.splice(0, this.state.breedKitties.length) // empty the array for next breed
+      let allKitties = await this.state.contractInstance.methods.totalSupply().call()
+      this.setState({count: allKitties})
+    }
+    else {alert('you are not selecting two Kitties')}
+    await this.loadKitties() 
+  }
+    
+  handleOffer = async  (e, kittyID) => {
+   e.preventDefault()
+   let value = `offer${kittyID}`
+   this.state.MarketplaceInstance.methods.setOffer(Number(this.state[value]), kittyID).send({from: this.state.account})
+  }
+
+ changeOffer = (e) => {
+ const {value, id} = e.target
+ this.setState({[id]: [value]})
+ }
+
+ offer= async (e, kittyID) => {
+  e.preventDefault()
+   await this.state.MarketplaceInstance.methods.getOffer(kittyID).call()
+  .then((value,error)=>{
+     if(value){
+      this.setState({[`blockchainOffer${kittyID}`]: value['1']})
+    }
+  })
+ }
+ 
+ removeOffer = async (e, kittyID) => {
+  e.preventDefault()
+  await this.state.MarketplaceInstance.methods.removeOffer(kittyID).send({from: this.state.account})
+  .then((value)=>{
+    if(value){
+     this.setState({[`blockchainOffer${kittyID}`]: value['0']})
+    }
+  })
+ }
+
+ buyKitty = async (e, kittyID) => {
+  e.preventDefault()
+  const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545")
+  let price = String(this.state[`blockchainOffer${kittyID}`])
+  var configETH = {value: web3.utils.toWei(price, "ether"), from: this.state.account}
+  this.state.MarketplaceInstance.methods.buyKitty(kittyID).send(configETH)
+ }
+
+ owner = async (e) => {
+   if(e.target.value!=='') {
+   let ownerKitty = await this.state.contractInstance.methods.ownerOf(e.target.value).call()
+   this.setState({ownerKittyAddress: ownerKitty})
+   }
+ }
+
+  
+
   render(){   
+
+  let kittyBreedSetoffer = (kittyID)=>{
+      return(
+      <div>
+        <label htmlFor={`checkBreed${kittyID}`} className= "float-right" onChange = {this.breed}> 
+          Breed
+        <input type="checkbox"  id={`checkBreed${kittyID}`} />
+        </label>
+        <br></br>
+        <form className= "offer" onSubmit={(e)=>{this.handleOffer(e,kittyID)}}> 
+          <input type= "number" min="1" max= "10000"  id= {`offer${kittyID}`} 
+          onChange = {this.changeOffer}></input>
+          <br></br>
+          <input className="nav-link b" type="submit" value="set Ether Offer" />
+        </form>
+      </div>) 
+  }
+
+  let removeOfferBuy = (kittyID)=>{
+      return (
+    <div className= "buy">
+    <span> Eth: {this.state[`blockchainOffer${kittyID}`]}</span>
+    <button className="nav-link b " onClick= {(e)=>{this.offer(e, kittyID)}}> Offer</button>
+    <button className="nav-link b" onClick= {(e)=> {this.removeOffer(e, kittyID)}}>Remove</button>
+    <button className="nav-link b" onClick={(e)=> {this.buyKitty(e, kittyID)}} >Buy</button>
+    </div>) 
+  }
     
+  let kittyStatisctics = (kittyID) =>{
+    return(
+    <div key= {kittyID.toString()}>
+    <span> KittyID: {kittyID}</span>
+    <span> Birthtime(block): {this.state[`birthTime${kittyID}`]}</span>
+    <span> MomID:  {this.state[`mumId${kittyID}`]}</span>
+    <span> DadID:  {this.state[`dadId${kittyID}`]} </span>
+    <span> Generation:  {this.state[`generation${kittyID}`]}</span>
+    </div>)
+  }
+    
+  
+  let catBoxFactory = (kittyID) => {
+    return(
+  <div key= {kittyID.toString()}className="col-lg-4 catBox light-b-shadow " >
+      {kitty (kittyID) }
+  </div>)
+  }
+
+  let catBoxCatalogue = (kittyID) => {
+    return(
+  <div key= {kittyID.toString()} className="col-lg-4 catBox light-b-shadow " >
+      {kittyBreedSetoffer(kittyID)}
+      {kitty (kittyID) }
+  </div>)
+  }
+
+  let catBoxMarketplace =  (kittyID) => {
+    return(
+  <div key= {kittyID.toString()}className="col-lg-4 catBox light-b-shadow " >
+      {removeOfferBuy(kittyID)}  
+      {kitty (kittyID) }
+  </div>)
+  }
+
+
   let kitty= (kittyID) =>  { 
     return(
-    <div className="col-lg-4 catBox light-b-shadow " >
-    <div className='cat' id={`cat${kittyID}`}>
+    <div key= {kittyID.toString()} className='cat' id={`cat${kittyID}`}>
       <motion.div className= 'ears'  id= {`ears${kittyID}`}
           animate={{ skewX: [...this.state[`isAnimated${kittyID}`]=== '2' ? [-6,0,-6,0,6,0,-6] : [0,0]]}}
          transition={{delay:0, duration: 5, repeat: Infinity }}
@@ -320,17 +467,20 @@ class App extends Component {
             <span id={`dnadecorationSides${kittyID}`}>{this.state[`patterncolor${kittyID}`]}</span>
             <span id={`dnaanimation${kittyID}`}>{this.state[`animation${kittyID}`]}</span>
             <span id="dnaspecial00"></span>
+            {kittyStatisctics(kittyID)}
           </b>
-        </div>   
-        
+        </div>  
       </div>
-    </div>
+    
      )}
 
     const renderCatalogue = () => { 
       let render = []
      for(let i=0; i<this.state.count; i++) {
-      render.push( <div>{kitty(String(i))}</div>)
+      render.push( 
+      <div key= {i.toString()}>
+        {catBoxCatalogue(String(i))}
+      </div>)
       } 
       return render
     }
@@ -350,7 +500,7 @@ class App extends Component {
                 <div className="container p-1"   id= 'Kitties-Factory'>
                   <h1>Kitties-Factory</h1>  
                   <p>Create your custom Kitty - Number of Kitties {this.state.count}</p>
-                    {kitty('00')}
+                    {catBoxFactory('00')}
                     <div className="col-lg-7 cattributes m-2 light-b-shadow">
                           <div>
                             <button className="white-btn" id= "hideColors" onClick={this.showHideColorsAttributes}>Colors</button>
@@ -370,7 +520,7 @@ class App extends Component {
                           <input type="range" min="10" max="98" className="form-control-range" id="tailColor" onChange ={(e)=> this.changeColorPattern(this.kittyGen00,e)} value={this.state['tailColor00']} />
                         </div>  
                         <div className="form-group">
-                          <label htmlFor="formControlRange"><b>Eye</b><span className="badge badge-dark ml-2" id="eyecode">{this.state['eyeColor']}</span></label>
+                          <label htmlFor="formControlRange"><b>Eye</b><span className="badge badge-dark ml-2" id="eyecode">{this.state['eyeColor00']}</span></label>
                           <input type="range" min="10" max="98" className="form-control-range" id="eyeColor" onChange ={(e)=> this.changeColorPattern(this.kittyGen00,e)} value= {this.state['eyeColor00']}/>
                         </div>
                         <div className="form-group">
@@ -411,14 +561,19 @@ class App extends Component {
                     </div>       
                 </div>
             </Route>
-            <Route path="/catalogue">
-             
+            <Route path="/catalogue">   
+                  
+                <button className="white-btn" onClick= {this.breedblokchain}>Breed two Kitties</button>
                 {renderCatalogue()}
-              
-                
             </Route>
-            <Route path="/marketplace">
-            
+            <Route path="/marketplace">Select KittyID to see the Owner
+                    <input type="number"  onChange={this.owner} ></input>
+                    <span>{this.state.ownerKittyAddress}</span>
+                    <br></br>
+                    {this.state.sale.map( (value)=>{
+                      return catBoxMarketplace(String(value))
+                    })
+                    }
             </Route>
           </Switch>
         </Router>
