@@ -28,6 +28,7 @@ class App extends Component {
         sale: [],
         kitties: [],
         breedKitties: [],
+        web3: {}
     }
     this.showHideColorsAttributes = this.showHideColorsAttributes.bind(this)
     this.showDefaultKitty = this.showDefaultKitty.bind(this)
@@ -40,15 +41,15 @@ class App extends Component {
       await this.loadKitties()
   }
 
-  colors= Object.values(allColors())
+  colors= Object.values(allColors()) // from 10 to 98 
   kittyGen00= '00'
   
-  loadKitties = async () =>{
+  loadKitties = async () =>{ // all the neccesary to load from the start to use on catalogue and factory pages
     let allKitties = await this.state.contractInstance.methods.totalSupply().call()
     this.state.sale = await this.state.MarketplaceInstance.methods.getAllTokenOnSale().call()
     this.setState({count: allKitties})
     this.state.kitties.splice(0, this.state.kitties.length)
-    for (let i=0; i<allKitties; i++){
+    for (let i=0; i<allKitties; i++){ // call every kitty from the blockchain and push the data on kitties array 
       let kitty = await this.state.contractInstance.methods.getKitty(i).call()
       this.setState({[`blockchainOffer${i}`]: '' }) 
       this.state.kitties.push(kitty)
@@ -56,7 +57,7 @@ class App extends Component {
     }
   }
 
-  renderKitties =  (kittyID) =>{
+  renderKitties =  (kittyID) =>{// call every function to change characteristics on every kitty from kitties array 
      this.colorPattern(String(this.state.kitties[kittyID][0].slice(0,2)), 'headColor', kittyID)
      this.colorPattern(String(this.state.kitties[kittyID][0].slice(2,4)), 'tailColor', kittyID)
      this.colorPattern(String(this.state.kitties[kittyID][0].slice(4,6)), 'eyeColor', kittyID)
@@ -72,27 +73,31 @@ class App extends Component {
     this.statistics(this.state.kitties[kittyID][4], 'generation', kittyID)
   }
 
-  async loadBlockchainData() {
+  async loadBlockchainData() {// accounts, web3, contract instances and connection with metamask
+    
     await window.ethereum.enable()
-    const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545")
-    const accounts = await web3.eth.getAccounts()
+    let web3 = new Web3(Web3.givenProvider || "wss://ropsten.infura.io/ws/v3/0336850f331a4fbe85621083466d7c93")
+    this.setState({web3: web3})
+  
+    const accounts = await this.state.web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
-    const contractInstance = new web3.eth.Contract(TODO_LIST_ABI.kittyContract_ABI, KITTYCONTRACT_ADDRESS );
-    const MarketplaceInstance =   new web3.eth.Contract(TODO_LIST_ABI.Marketplace_ABI, MARKETPLACE_ADDRESS)
+    const contractInstance = new this.state.web3.eth.Contract(TODO_LIST_ABI.kittyContract_ABI, KITTYCONTRACT_ADDRESS );// Kitty Contract instance 
+    const MarketplaceInstance =   new this.state.web3.eth.Contract(TODO_LIST_ABI.Marketplace_ABI, MARKETPLACE_ADDRESS)// Marketplace Contact instance 
     this.setState({contractInstance, MarketplaceInstance})
   }
 
-  createKitty= async (e) =>{
-     e.preventDefault()
+   
+  
+  createKitty= async (e) =>{// every kitty is USED HERE  with  id 00, later the blockchain will include the real ID
+    e.preventDefault()
      let DNA = this.state['headColor00']+this.state['tailColor00']+this.state['eyeColor00']
      +this.state['earColor00']+this.state['eyeDirection00']+this.state['patternDecorative00']
      +this.state['patternDecorativeColor00']+this.state['patterncolor00']+this.state['animation00']
      await this.state.contractInstance.methods.createKittyGen0(Number(DNA)).send({from: this.state.account})
-     //let allKitties = await this.state.contractInstance.methods.totalSupply().call()
-     //this.setState({count: allKitties})
      await this.loadKitties()
   }
 
+  // FUNCTIONS TO CHANGE CHARACTERISTICS ON THE KITTIES 
   changeColorPattern = (kittyID, e) => {
      this.colorPattern(e.target.value, e.target.id, kittyID)
   }
@@ -175,14 +180,15 @@ class App extends Component {
      })
   }
 
-  statistics = (value,id, kittyID) => {
+ //OTHER FUNCTIONS USED ON FACTORY PAGE 
+  statistics = (value,id, kittyID) => {// birthtime, momid , dadid, generation 
     id= String(id)+kittyID
       this.setState({
         [id]: value
       })
   }
    
-  showHideColorsAttributes(e)  {
+  showHideColorsAttributes(e)  { // to hide Attributtes or colors
      e.preventDefault() 
      e.target.id=== 'hideAttributtes' ? 
       this.setState({
@@ -200,7 +206,7 @@ class App extends Component {
     this.defaultKitty();
   } 
 
-  defaultKitty=  ()=> { 
+  defaultKitty=  ()=> { //kitty generation 00 from the factory page or when is realoaded the  page 
      this.setState({
       earsStyle00 : {backgroundColor: '#4c858b'},
       headBodyStyle00 : {backgroundColor: '#4c858b'},
@@ -251,7 +257,8 @@ class App extends Component {
       return random 
   }
 
-  breed = (e) => {
+  // FUNCTIONS TO USE ON MARKETPLACE AND CATALOGUE PAGES 
+  breed = (e) => {// control all the logic on the breed checkbox () on catalogue page
     let id = e.target.id
     if (this.state.breedKitties.includes(id)){
       this.state.breedKitties.splice(this.state.breedKitties.indexOf(id),1)
@@ -261,7 +268,7 @@ class App extends Component {
     }
   }
   
-  breedblokchain = async () =>{
+  breedblokchain = async () =>{// control the logic to breed only two kitties 
     if(this.state.breedKitties.length === 2) {
       let kitty1 = this.state.breedKitties[0].slice(10)
       let kitty2 = this.state.breedKitties[1].slice(10)
@@ -279,18 +286,18 @@ class App extends Component {
     await this.loadKitties() 
   }
     
-  handleOffer = async  (e, kittyID) => {
+  handleOffer = async  (e, kittyID) => { // uses ether only for test, it is neccesary an api to swapt bewteen cripto and fiat 
    e.preventDefault()
    let value = `offer${kittyID}`
    this.state.MarketplaceInstance.methods.setOffer(Number(this.state[value]), kittyID).send({from: this.state.account})
   }
 
- changeOffer = (e) => {
+ changeOffer = (e) => { // only follow the offer internally(from the input) it is not the blockchainOffer from the blockchain 
  const {value, id} = e.target
  this.setState({[id]: [value]})
  }
 
- offer= async (e, kittyID) => {
+ offer= async (e, kittyID) => { // get the offer from the blokchain blockcahinOffer
   e.preventDefault()
    await this.state.MarketplaceInstance.methods.getOffer(kittyID).call()
   .then((value,error)=>{
@@ -300,7 +307,7 @@ class App extends Component {
   })
  }
  
- removeOffer = async (e, kittyID) => {
+ removeOffer = async (e, kittyID) => {// on the blockchain(blockchainOffer) not internally(offer)
   e.preventDefault()
   await this.state.MarketplaceInstance.methods.removeOffer(kittyID).send({from: this.state.account})
   .then((value)=>{
@@ -310,15 +317,15 @@ class App extends Component {
   })
  }
 
- buyKitty = async (e, kittyID) => {
+ buyKitty = async (e, kittyID) => {// on ether only for test purposes 
   e.preventDefault()
-  const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545")
+  //const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545")
   let price = String(this.state[`blockchainOffer${kittyID}`])
-  var configETH = {value: web3.utils.toWei(price, "ether"), from: this.state.account}
+  var configETH = {value: this.state.web3.utils.toWei(price, "ether"), from: this.state.account}
   this.state.MarketplaceInstance.methods.buyKitty(kittyID).send(configETH)
  }
 
- owner = async (e) => {
+ owner = async (e) => {// from the blockchain
    if(e.target.value!=='') {
    let ownerKitty = await this.state.contractInstance.methods.ownerOf(e.target.value).call()
    this.setState({ownerKittyAddress: ownerKitty})
@@ -368,14 +375,14 @@ class App extends Component {
   }
     
   
-  let catBoxFactory = (kittyID) => {
+  let catBoxFactory = (kittyID) => {// only use on Factory page
     return(
   <div key= {kittyID.toString()}className="col-lg-4 catBox light-b-shadow " >
       {kitty (kittyID) }
   </div>)
   }
 
-  let catBoxCatalogue = (kittyID) => {
+  let catBoxCatalogue = (kittyID) => {// only use on Catalogue page
     return(
   <div key= {kittyID.toString()} className="col-lg-4 catBox light-b-shadow " >
       {kittyBreedSetoffer(kittyID)}
@@ -383,7 +390,7 @@ class App extends Component {
   </div>)
   }
 
-  let catBoxMarketplace =  (kittyID) => {
+  let catBoxMarketplace =  (kittyID) => {// only use on Marketplace page
     return(
   <div key= {kittyID.toString()}className="col-lg-4 catBox light-b-shadow " >
       {removeOfferBuy(kittyID)}  
@@ -392,7 +399,7 @@ class App extends Component {
   }
 
 
-  let kitty= (kittyID) =>  { 
+  let kitty= (kittyID) =>  { // every kitty included animations
     return(
     <div key= {kittyID.toString()} className='cat' id={`cat${kittyID}`}>
       <motion.div className= 'ears'  id= {`ears${kittyID}`}
@@ -485,7 +492,7 @@ class App extends Component {
       return render
     }
 
-    return (
+    return ( 
       <div className="App">
         <Router>
           <div className="light-b-shadow"  align = "center">
@@ -493,6 +500,7 @@ class App extends Component {
             <Link to="/" ><button className ='red-btn'>Factory</button></Link>
             <Link to="/catalogue"><button className ='red-btn'>Catalogue</button></Link>
             <Link to= "/marketplace"><button className ='red-btn'>Marketplace</button>  </Link>
+            <button className ='red-btn' > Connect Wallet</button>
             </p>
           </div>
           <Switch>

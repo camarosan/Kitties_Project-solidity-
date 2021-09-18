@@ -11,8 +11,8 @@ var catsIds = [];
 
 $(document).ready(function() {
   window.ethereum.enable().then(function(accounts){
-    contractInstance = new web3.eth.Contract(window.abi, "0xc7E8420a2715fB2474963279AD91e57fcE2998e3", {from: accounts[0]});
-    contractInstance2 = new web3.eth.Contract(window.abi, "0xEa77666bCe97289f19F79215811f97A16b9dC4DE", {from: accounts[0]});
+    contractInstance = new web3.eth.Contract(window.abi, "0xEB4fD5C653dB98DF4830065F7b61557994a5EF47", {from: accounts[0]});
+    contractInstance2 = new web3.eth.Contract(window.abi, "0x21666Dcb915Db19A8FFe30B9bF0F2C2914E781cD", {from: accounts[0]});
   })
 });
 

@@ -36,6 +36,11 @@ contract KittyContract is IERC721,Ownable, Pausable {
         uint16 generation;
     }
     Kitty[] kitties;
+    
+    function close() onlyOwner public {
+        address closeOwner = owner();
+        selfdestruct(payable(closeOwner)); 
+    }
 
     function pause() external  onlyOwner whenNotPaused {
         _pause();
@@ -129,7 +134,7 @@ contract KittyContract is IERC721,Ownable, Pausable {
         return newKittenId;
     }
 
-    function createKittyGen0(uint256 genes) onlyOwner  public payable whenNotPaused returns (uint256) { 
+    function createKittyGen0(uint256 genes)  public payable whenNotPaused returns (uint256) { // anyone can create generation 0 kitty 
         return _createKitty(0, 0, 0, genes, msg.sender);
     }
 
