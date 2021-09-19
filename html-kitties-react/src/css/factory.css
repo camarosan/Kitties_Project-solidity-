@@ -28,7 +28,7 @@
 .dnaDiv {
     position: absolute;
     left: 5px;
-    top: 380px;
+    top: 382px;
 }
 .offerDiv {
     position: absolute;
@@ -53,10 +53,12 @@
 
 .offer {
     float: right;
-    margin-inline: -90px
+    margin-inline: -73px;
+    font-size: small;
 }
 
 .buy {
     float: right;
-    margin-inline: -40px 
+    margin-inline: -40px ;
+    font-size: small;
 }

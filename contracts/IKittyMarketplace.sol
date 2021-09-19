@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
-import "./Kittycontract.sol";
+import "./KittyContract.sol";
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 /*

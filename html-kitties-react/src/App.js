@@ -11,24 +11,17 @@ import { motion } from "framer-motion";
 import {KITTYCONTRACT_ADDRESS, MARKETPLACE_ADDRESS,TODO_LIST_ABI} from './config'
 import Web3 from 'web3'
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
-//import {Catalogue} from './Components/Catalogue.jsx'
-//import {Marketplace} from './Components/Marketplace.jsx'
 
+// MADE EVERYTHING ON ONE COMPONENT ONLY FOR TEST(ALL IS WORKING), BLOCKCHAIN PROJECT FOR IVAN ON TECH ACADEMY 
 class App extends Component {
   constructor(props){
     super(props)
     this.state = {
         account: {},
-        contractInstance:{},
-        count: '0',
-        momID: '',
-        dadID: '',
-        generation: '',
         ownerKittyAddress: '0',
         sale: [],
         kitties: [],
         breedKitties: [],
-        web3: {}
     }
     this.showHideColorsAttributes = this.showHideColorsAttributes.bind(this)
     this.showDefaultKitty = this.showDefaultKitty.bind(this)
@@ -42,7 +35,7 @@ class App extends Component {
   }
 
   colors= Object.values(allColors()) // from 10 to 98 
-  kittyGen00= '00'
+  kittyGen00= '00' // Used only on factory page
   
   loadKitties = async () =>{ // all the neccesary to load from the start to use on catalogue and factory pages
     let allKitties = await this.state.contractInstance.methods.totalSupply().call()
@@ -74,11 +67,9 @@ class App extends Component {
   }
 
   async loadBlockchainData() {// accounts, web3, contract instances and connection with metamask
-    
     await window.ethereum.enable()
     let web3 = new Web3(Web3.givenProvider || "wss://ropsten.infura.io/ws/v3/0336850f331a4fbe85621083466d7c93")
     this.setState({web3: web3})
-  
     const accounts = await this.state.web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
     const contractInstance = new this.state.web3.eth.Contract(TODO_LIST_ABI.kittyContract_ABI, KITTYCONTRACT_ADDRESS );// Kitty Contract instance 
@@ -86,8 +77,6 @@ class App extends Component {
     this.setState({contractInstance, MarketplaceInstance})
   }
 
-   
-  
   createKitty= async (e) =>{// every kitty is USED HERE  with  id 00, later the blockchain will include the real ID
     e.preventDefault()
      let DNA = this.state['headColor00']+this.state['tailColor00']+this.state['eyeColor00']
@@ -272,12 +261,10 @@ class App extends Component {
     if(this.state.breedKitties.length === 2) {
       let kitty1 = this.state.breedKitties[0].slice(10)
       let kitty2 = this.state.breedKitties[1].slice(10)
-    
       await this.state.contractInstance.methods.breed(kitty1, kitty2).send({from: this.state.account})
       .then(( event)=>{
           console.log(event)   
       }); 
-       
       this.state.breedKitties.splice(0, this.state.breedKitties.length) // empty the array for next breed
       let allKitties = await this.state.contractInstance.methods.totalSupply().call()
       this.setState({count: allKitties})
@@ -319,7 +306,6 @@ class App extends Component {
 
  buyKitty = async (e, kittyID) => {// on ether only for test purposes 
   e.preventDefault()
-  //const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545")
   let price = String(this.state[`blockchainOffer${kittyID}`])
   var configETH = {value: this.state.web3.utils.toWei(price, "ether"), from: this.state.account}
   this.state.MarketplaceInstance.methods.buyKitty(kittyID).send(configETH)
@@ -332,15 +318,15 @@ class App extends Component {
    }
  }
 
-  
+ 
 
   render(){   
 
-  let kittyBreedSetoffer = (kittyID)=>{
+  let kittyBreedSetoffer = (kittyID)=>{ // For Marketplace 
       return(
       <div>
         <label htmlFor={`checkBreed${kittyID}`} className= "float-right" onChange = {this.breed}> 
-          Breed
+        Breed
         <input type="checkbox"  id={`checkBreed${kittyID}`} />
         </label>
         <br></br>
@@ -353,17 +339,17 @@ class App extends Component {
       </div>) 
   }
 
-  let removeOfferBuy = (kittyID)=>{
+  let removeOfferBuy = (kittyID)=>{ // For Catalogue
       return (
     <div className= "buy">
-    <span> Eth: {this.state[`blockchainOffer${kittyID}`]}</span>
+    <span> Ethers: {this.state[`blockchainOffer${kittyID}`]}</span>
     <button className="nav-link b " onClick= {(e)=>{this.offer(e, kittyID)}}> Offer</button>
     <button className="nav-link b" onClick= {(e)=> {this.removeOffer(e, kittyID)}}>Remove</button>
     <button className="nav-link b" onClick={(e)=> {this.buyKitty(e, kittyID)}} >Buy</button>
     </div>) 
   }
     
-  let kittyStatisctics = (kittyID) =>{
+  let kittyStatisctics = (kittyID) =>{// used on factory(only show KittyID:00), Catalogue and Marketplace
     return(
     <div key= {kittyID.toString()}>
     <span> KittyID: {kittyID}</span>
@@ -402,7 +388,7 @@ class App extends Component {
   let kitty= (kittyID) =>  { // every kitty included animations
     return(
     <div key= {kittyID.toString()} className='cat' id={`cat${kittyID}`}>
-      <motion.div className= 'ears'  id= {`ears${kittyID}`}
+      <motion.div className= 'ears'  id= {`ears${kittyID}`} //motion.div for animations
           animate={{ skewX: [...this.state[`isAnimated${kittyID}`]=== '2' ? [-6,0,-6,0,6,0,-6] : [0,0]]}}
          transition={{delay:0, duration: 5, repeat: Infinity }}
         >   
@@ -473,7 +459,7 @@ class App extends Component {
             <span id={`dnadecorationMid${kittyID}`}>{this.state[`patternDecorativeColor${kittyID}`]}</span>
             <span id={`dnadecorationSides${kittyID}`}>{this.state[`patterncolor${kittyID}`]}</span>
             <span id={`dnaanimation${kittyID}`}>{this.state[`animation${kittyID}`]}</span>
-            <span id="dnaspecial00"></span>
+            <span id="dnaspecial00"></span> {/*not used*/}
             {kittyStatisctics(kittyID)}
           </b>
         </div>  
@@ -481,7 +467,7 @@ class App extends Component {
     
      )}
 
-    const renderCatalogue = () => { 
+    const renderCatalogue = () => { // render all kitties from the contract into catalogue
       let render = []
      for(let i=0; i<this.state.count; i++) {
       render.push( 
@@ -494,20 +480,20 @@ class App extends Component {
 
     return ( 
       <div className="App">
-        <Router>
+        <Router> {/*to use routing for change between pages easily*/}
           <div className="light-b-shadow"  align = "center">
             <p className="bg-white pt-0">Academy-kitties
             <Link to="/" ><button className ='red-btn'>Factory</button></Link>
             <Link to="/catalogue"><button className ='red-btn'>Catalogue</button></Link>
             <Link to= "/marketplace"><button className ='red-btn'>Marketplace</button>  </Link>
-            <button className ='red-btn' > Connect Wallet</button>
             </p>
           </div>
           <Switch>
             <Route exact path="/">
                 <div className="container p-1"   id= 'Kitties-Factory'>
                   <h1>Kitties-Factory</h1>  
-                  <p>Create your custom Kitty - Number of Kitties {this.state.count}</p>
+                  <p>Create your custom Kitty -Contracts on Ropsten Network - Number of Kitties {this.state.count}</p>
+                  
                     {catBoxFactory('00')}
                     <div className="col-lg-7 cattributes m-2 light-b-shadow">
                           <div>
@@ -552,10 +538,7 @@ class App extends Component {
                           <input type="range" min="1" max="4" className="form-control-range" id="animation" onChange={(e)=>this.changeAnimation(this.kittyGen00,e)} 
                             value={this.state['animation00']}/>
                         </div>
-                        <div className="form-group float-left">
-                          <label htmlFor="formControlRange"><b>Sex</b><span className="badge badge-dark ml-2" id="sexcode"></span></label>
-                          <input type="range" min="0" max="1" className="form-control-range" id="sex"/>
-                        </div>
+                      
                         <div className="form-group">
                           <label htmlFor="formControlRange"><b>Pattern Color</b><span className="badge badge-dark ml-2" id="patterncolorcode">{this.state['patternDecorativeColor00']}</span></label>
                           <input type="range" min="10" max="98" className="form-control-range" id="patternDecorativeColor" onChange = {(e)=>this.changeColorPattern(this.kittyGen00,e)} value={this.state['patternDecorativeColor00']}/>
@@ -569,12 +552,11 @@ class App extends Component {
                     </div>       
                 </div>
             </Route>
-            <Route path="/catalogue">   
-                  
+            <Route path="/catalogue">   {/*catalogue page*/}
                 <button className="white-btn" onClick= {this.breedblokchain}>Breed two Kitties</button>
                 {renderCatalogue()}
             </Route>
-            <Route path="/marketplace">Select KittyID to see the Owner
+            <Route path="/marketplace">Select KittyID to see the Owner {/*marketplace page*/}
                     <input type="number"  onChange={this.owner} ></input>
                     <span>{this.state.ownerKittyAddress}</span>
                     <br></br>
